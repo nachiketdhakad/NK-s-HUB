@@ -43,6 +43,49 @@
       font-weight:600; font-size:13px; letter-spacing:1.5px; text-transform:uppercase;
     }
     .nk-account-pill:hover{ color:#D8B36A; }
+
+    .nk-menu-toggle{
+      display:none;
+      background:none;
+      border:none;
+      font-size:28px;
+      color:#D8B36A;
+      cursor:pointer;
+    }
+
+    @media (max-width: 768px){
+      .nk-menu-toggle{
+        display:block;
+      }
+      .nk-header{
+        position:relative;
+        flex-wrap:nowrap;
+      }
+      .nk-logo-text .nk-title{
+        font-size:18px;
+      }
+      .nk-nav-links{
+        display:none;
+        flex-direction:column;
+        position:absolute;
+        top:100%;
+        right:0;
+        background:#1B140F;
+        width:220px;
+        padding:10px 0;
+        gap:0;
+        z-index:999;
+        box-shadow:0 8px 20px rgba(0,0,0,0.4);
+      }
+      .nk-nav-links.nk-nav-open{
+        display:flex;
+      }
+      .nk-nav-links a, .nk-account-pill{
+        padding:14px 20px;
+        width:100%;
+        box-sizing:border-box;
+      }
+    }
   </style>
 </head>
 <body>
@@ -54,6 +97,7 @@
         <span class="nk-sub">Est. Indore</span>
       </div>
     </div>
+    <button class="nk-menu-toggle" onclick="document.querySelector('.nk-nav-links').classList.toggle('nk-nav-open')">☰</button>
 <nav class="nk-nav-links">
   <a href="/">Home</a>
   <a href="/menu">Menu</a>
