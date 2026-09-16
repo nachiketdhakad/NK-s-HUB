@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{% block title %}NK's Hub{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'food/style.css' %}">
+  <style>
+    .nk-header{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 5%; background:#1B140F;
+      font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    }
+    .nk-logo-block{
+      display:flex; align-items:center; gap:14px; cursor:default; user-select:none;
+    }
+    .nk-logo-badge{
+      width:54px; height:54px; border-radius:50%; flex-shrink:0;
+      border:2px solid #D8B36A; background:#2B2118;
+      display:flex; align-items:center; justify-content:center;
+      font-family:'Playfair Display', Georgia, serif; font-weight:700;
+      font-size:18px; color:#D8B36A; letter-spacing:1px;
+    }
+    .nk-logo-text{ display:flex; flex-direction:column; line-height:1.15; }
+    .nk-logo-text .nk-title{
+      font-family:'Playfair Display', Georgia, serif; font-style:italic;
+      font-size:24px; color:#F3E9D8; font-weight:600;
+    }
+    .nk-logo-text .nk-sub{
+      font-size:10.5px; letter-spacing:3px; color:#B99A5B; margin-top:2px;
+      text-transform:uppercase;
+    }
+    .nk-nav-links{ display:flex; align-items:center; gap:38px; }
+    .nk-nav-links a{
+      color:#E8DCC8; text-decoration:none; font-weight:600; font-size:13px;
+      letter-spacing:1.5px; text-transform:uppercase;
+    }
+    .nk-nav-links a:hover{ color:#D8B36A; }
+    .nk-account-pill{
+      display:flex; align-items:center; gap:8px; color:#E8DCC8; text-decoration:none;
+      font-weight:600; font-size:13px; letter-spacing:1.5px; text-transform:uppercase;
+    }
+    .nk-account-pill:hover{ color:#D8B36A; }
+  </style>
+</head>
+<body>
+  <header class="nk-header">
+    <div class="nk-logo-block">
+      <div class="nk-logo-badge">NK</div>
+      <div class="nk-logo-text">
+        <span class="nk-title">NK's Hub</span>
+        <span class="nk-sub">Est. Indore</span>
+      </div>
+    </div>
+<nav class="nk-nav-links">
+  <a href="/">Home</a>
+  <a href="/menu">Menu</a>
+ 
+  <a href="{% url 'my_orders' %}">My Orders</a>
+  {% if user.is_authenticated %}
+    <a href="/my-account" class="nk-account-pill">👤 {{ user.first_name|default:user.username }}</a>
+  {% else %}
+    <a href="/login" class="nk-account-pill">👤 Login</a>
+  {% endif %}
+</nav>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>© 2026 NK's Hub — Premium Fast Food</p>
+  </footer>
+</body>
+</html>

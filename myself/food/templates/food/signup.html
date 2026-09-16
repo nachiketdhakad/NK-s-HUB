@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up - NK's Hub</title>
+  <link rel="stylesheet" href="{% static 'food/style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Jost', sans-serif;
+      background: #0c0a08;
+      color: #ece4d6;
+      min-height: 100vh;
+    }
+
+    header.navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 60px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%);
+    }
+    .logo-link { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+    .monogram {
+      width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #c9a227;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700;
+      color: #f2d98a;
+    }
+    .logo-text .name {
+      font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600;
+      letter-spacing: 3px; color: #f2ead9;
+    }
+    header.navbar nav a {
+      color: #ded4bd; text-decoration: none; margin: 0 16px; font-size: 13px;
+      letter-spacing: 1.5px; text-transform: uppercase; transition: color 0.3s;
+    }
+    header.navbar nav a:hover { color: #f2d98a; }
+
+    .login-container {
+      display: flex; justify-content: center; align-items: center;
+      min-height: calc(100vh - 100px); padding: 40px 20px;
+    }
+    .login-box {
+      display: flex; background: #14110d; border-radius: 4px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5); overflow: hidden;
+      width: 900px; max-width: 100%;
+      border: 1px solid rgba(201,162,39,0.25);
+    }
+    .login-left {
+      flex: 1; background: url("{% static 'food/images/burger.jpg' %}") center/cover no-repeat;
+      position: relative; min-height: 560px;
+    }
+    .login-left::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(12,10,8,0.2), rgba(12,10,8,0.7));
+    }
+    .login-right { flex: 1; padding: 50px 44px; display: flex; flex-direction: column; justify-content: center; }
+
+    h2 {
+      font-family: 'Cormorant Garamond', serif; color: #f2d98a; font-size: 34px;
+      font-weight: 600; margin: 0 0 8px; text-align: center;
+    }
+    .login-note { text-align: center; color: #a68a4e; font-size: 13px; margin: 0 0 26px; letter-spacing: 0.5px; }
+    .error-msg {
+      color: #ff6b5c; font-size: 13px; text-align: center; margin-bottom: 15px;
+      background: rgba(255,107,92,0.1); padding: 8px; border-radius: 4px;
+    }
+
+    .input-group { position: relative; margin-bottom: 20px; }
+    .input-group input {
+      width: 100%; padding: 12px 14px; border: none; border-bottom: 1.5px solid rgba(201,162,39,0.4);
+      outline: none; font-size: 15px; background: transparent; color: #ece4d6;
+      font-family: 'Jost', sans-serif; transition: 0.3s;
+    }
+    .input-group input::placeholder { color: #7a705d; }
+    .input-group input:focus { border-bottom-color: #c9a227; }
+
+    .btn-login {
+      background: #c9a227; border: none; color: #14110d; padding: 13px;
+      font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+      border-radius: 2px; cursor: pointer; transition: 0.3s; font-weight: 600; margin-top: 8px;
+      width: 100%;
+    }
+    .btn-login:hover { background: #e3c76b; box-shadow: 0 0 20px rgba(201,162,39,0.4); }
+
+    .switch-link { text-align: center; margin-top: 18px; font-size: 13.5px; color: #a89c82; }
+    .switch-link a { color: #e3c76b; font-weight: 600; text-decoration: none; letter-spacing: 0.5px; }
+    .switch-link a:hover { text-decoration: underline; }
+
+    footer {
+      text-align: center; color: #8a7a58; padding: 22px; font-size: 12px;
+      letter-spacing: 2px; text-transform: uppercase; border-top: 1px solid rgba(201,162,39,0.15);
+    }
+
+    @media (max-width: 760px) {
+      .login-left { display: none; }
+      .login-box { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="/" class="logo-link">
+      <div class="monogram">NK</div>
+      <div class="logo-text"><div class="name">NK's Hub</div></div>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/menu/">Menu</a>
+      <a href="/login/">Login</a>
+      <a href="/about/">About Us</a>
+    </nav>
+  </header>
+
+  <div class="login-container">
+    <div class="login-box">
+      <div class="login-left"></div>
+      <div class="login-right">
+        <h2>Create Account</h2>
+
+        {% if request.GET.next %}
+          <p class="login-note">Sign up to continue with your order</p>
+        {% else %}
+          <p class="login-note">Join NK's Hub today</p>
+        {% endif %}
+
+        {% if error %}
+          <p class="error-msg">{{ error }}</p>
+        {% endif %}
+
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.GET.next }}">
+
+          <div class="input-group">
+            <input type="text" name="username" placeholder="Username" required>
+          </div>
+          <div class="input-group">
+            <input type="email" name="email" placeholder="Email" required>
+          </div>
+          <div class="input-group">
+            <input type="text" name="phone" placeholder="Phone Number" pattern="[0-9]{10}" title="10 digit phone number" required>
+          </div>
+          <div class="input-group">
+            <input type="password" name="password" placeholder="Password" required>
+          </div>
+          <button type="submit" class="btn-login">Sign Up</button>
+        </form>
+
+        <p class="switch-link">
+          Already have an account?
+          <a href="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}">Login</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer>NK's Hub — Indore</footer>
+</body>
+</html>

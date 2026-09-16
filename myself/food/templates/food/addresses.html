@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Addresses - NK's Hub</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Poppins', sans-serif; background: #fff8f2; color: #222; }
+    header.navbar { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 60px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+    header.navbar .logo { font-size: 26px; font-weight: bold; color: #ff4500; text-decoration: none; }
+    header.navbar nav a { color: #333; text-decoration: none; margin: 0 15px; font-weight: 500; }
+    .wrap { max-width: 720px; margin: 30px auto 60px; padding: 0 20px; }
+    .wrap h2 { font-size: 24px; margin-bottom: 20px; }
+    .addr-card { background: #fff; border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .addr-card.active { border: 2px solid #ff7b00; }
+    .addr-info strong { font-size: 15px; }
+    .addr-info .tag { font-size: 11px; background: #fff2e6; color: #ff7b00; padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
+    .addr-info p { margin: 6px 0 0; font-size: 13.5px; color: #666; line-height: 1.5; }
+    .set-active-btn { border: 1.5px solid #00c853; background: #fff; color: #00994d; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; white-space: nowrap; }
+    .set-active-btn:hover { background: #e9f9ef; }
+    .add-addr-box { background: #fff; border-radius: 14px; padding: 22px; margin-top: 24px; box-shadow: 0 4px 14px rgba(0,0,0,0.06); }
+    .add-addr-box h3 { margin: 0 0 16px; font-size: 16px; }
+    .add-addr-box input, .add-addr-box textarea {
+      width: 100%; border: 1.5px solid #e2e2e2; border-radius: 10px; padding: 10px 12px;
+      font-size: 14px; margin-bottom: 12px; font-family: inherit;
+    }
+    .save-addr-btn { background: linear-gradient(90deg, #ff7b00, #ff4500); color: #fff; border: none; padding: 11px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    .save-addr-btn:hover { opacity: 0.9; }
+    .form-error { color: #c0392b; font-size: 13px; margin-bottom: 10px; display: none; }
+    .form-success { color: #00994d; font-size: 13px; margin-bottom: 10px; display: none; }
+    .empty-addr { text-align: center; color: #666; padding: 30px 0; }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <a href="/" class="logo">NK's Hub</a>
+    <nav>
+      <a href="/menu/">Menu</a>
+      <a href="{% url 'my_account' %}">My Account</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <h2>📍 My Addresses</h2>
+
+    <div id="addrList">
+      {% for addr in addresses %}
+        <div class="addr-card {% if addr.is_active %}active{% endif %}" id="addr-{{ addr.id }}">
+          <div class="addr-info">
+            <strong>{{ addr.full_name }}</strong>
+            {% if addr.is_active %}<span class="tag">ACTIVE</span>{% endif %}
+            <p>{{ addr.phone_number }}<br>{{ addr.address_line }}, {{ addr.area_name }} - {{ addr.pincode }}</p>
+          </div>
+          {% if not addr.is_active %}
+            <button class="set-active-btn" onclick="setActive({{ addr.id }})">Set Active</button>
+          {% endif %}
+        </div>
+      {% empty %}
+        <div class="empty-addr">Koi saved address nahi hai.</div>
+      {% endfor %}
+    </div>
+
+    <div class="add-addr-box">
+      <h3>Add New Address</h3>
+      <div class="form-error" id="addrError"></div>
+      <div class="form-success" id="addrSuccess"></div>
+      <form id="addAddrForm">
+        {% csrf_token %}
+        <input type="text" name="full_name" placeholder="Full Name" required>
+        <input type="text" name="phone_number" placeholder="Phone Number" required>
+        <input type="text" name="pincode" placeholder="Pincode" required>
+        <textarea name="address_line" rows="3" placeholder="House no, street, landmark" required></textarea>
+        <button type="submit" class="save-addr-btn">Save Address</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function getCookie(name) {
+      const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return v ? v.pop() : '';
+    }
+
+    document.getElementById('addAddrForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const errorBox = document.getElementById('addrError');
+      const successBox = document.getElementById('addrSuccess');
+      errorBox.style.display = 'none';
+      successBox.style.display = 'none';
+
+      fetch("{% url 'add_address' %}", {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        body: new FormData(this)
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          successBox.textContent = 'Address saved!';
+          successBox.style.display = 'block';
+          setTimeout(() => window.location.reload(), 700);
+        } else {
+          errorBox.textContent = data.error || 'Kuch galat ho gaya, dobara try karo.';
+          errorBox.style.display = 'block';
+        }
+      });
+    });
+
+    function setActive(id) {
+      fetch(`/set-active-address/${id}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') }
+      })
+      .then(r => r.json())
+      .then(data => { if (data.success) window.location.reload(); });
+    }
+  </script>
+</body>
+</html>

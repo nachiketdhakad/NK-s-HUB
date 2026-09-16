@@ -1,0 +1,768 @@
+{% extends 'food/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+.checkout-wrap { display:flex; gap:24px; max-width:1100px; margin:24px auto 60px; padding:0 24px; align-items:flex-start; flex-wrap:wrap; }
+.left-col { flex:1.6; min-width:320px; }
+.right-col { flex:1; min-width:300px; position:sticky; top:24px; }
+
+.step-card { display:flex; gap:18px; background:#fff; border-radius:14px; padding:24px; margin-bottom:18px; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+.step-icon { width:42px; height:42px; border-radius:50%; background:#222; color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.step-icon.done { background:#00994d; }
+.step-body { flex:1; }
+.step-body h3 { margin:0 0 6px; font-size:17px; }
+.step-sub { font-size:13.5px; color:#888; margin-bottom:14px; }
+
+.account-actions { display:flex; gap:14px; flex-wrap:wrap; }
+.btn-outline { border:1.5px solid #00c853; color:#00994d; background:#fff; padding:10px 22px; border-radius:8px; font-weight:700; font-size:13.5px; text-decoration:none; cursor:pointer; }
+.account-ok { display:flex; align-items:center; gap:10px; font-size:14px; }
+.user-badge { background:#fff2e6; color:#ff7b00; font-weight:700; padding:4px 12px; border-radius:20px; font-size:13px; }
+
+.address-header { display:flex; justify-content:space-between; align-items:center; }
+.change-location-link { color:#ff7b00; font-size:13.5px; font-weight:700; text-decoration:none; cursor:pointer; }
+.active-address { background:#f8f8f8; border-radius:10px; padding:14px; margin-top:10px; font-size:14px; }
+.active-address p { margin:6px 0 0; color:#555; }
+.text-warning { color:#c0392b; font-size:13.5px; margin-top:8px; }
+
+/* Swiggy/Flipkart style ETA card */
+.eta-card {
+  margin-top:14px; display:flex; align-items:center; gap:14px;
+  background:#f4fff8; border:1px solid #c9f0d8; border-radius:12px; padding:14px 16px;
+}
+.eta-card.error { background:#fdeaea; border-color:#f3c6c6; }
+.eta-icon {
+  width:40px; height:40px; border-radius:50%; background:#00994d; color:#fff;
+  display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
+}
+.eta-card.error .eta-icon { background:#c0392b; }
+.eta-text .eta-time { font-weight:800; font-size:15.5px; color:#00994d; }
+.eta-card.error .eta-text .eta-time { color:#c0392b; }
+.eta-text .eta-sub { font-size:12.5px; color:#666; margin-top:2px; }
+.eta-retry-btn {
+  margin-left:auto; border:1.5px solid #c0392b; color:#c0392b; background:#fff;
+  padding:6px 14px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer; white-space:nowrap;
+}
+
+.payment-options { display:flex; flex-direction:column; gap:10px; }
+.payment-option { display:flex; align-items:center; gap:12px; border:1.5px solid #e2e2e2; border-radius:10px; padding:13px 16px; cursor:pointer; font-size:14px; font-weight:500; }
+.payment-option:hover { border-color:#ffb877; }
+.payment-option.selected { border-color:#ff7b00; background:#fff8f2; }
+.payment-option.disabled { opacity:0.5; cursor:not-allowed; }
+.payment-option input[type="radio"] { accent-color:#ff7b00; width:16px; height:16px; }
+.unavailable-tag { margin-left:auto; font-size:12px; color:#999; }
+
+.place-order-btn { width:100%; background:linear-gradient(90deg,#00c853,#00994d); color:#fff; border:none; padding:15px; border-radius:10px; font-weight:700; font-size:15px; cursor:pointer; margin-top:20px; }
+.place-order-btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+.summary-card { background:#fff; border-radius:14px; padding:22px; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
+.summary-title { font-size:16px; font-weight:700; margin-bottom:14px; }
+.cart-item-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #f2f2f2; }
+.cart-item-row:last-of-type { border-bottom:none; }
+.cart-item-row img { width:46px; height:46px; border-radius:8px; object-fit:cover; }
+.cart-item-info { flex:1; }
+.cart-item-info .name { font-size:13.5px; font-weight:600; }
+.cart-item-info .qty { font-size:12px; color:#999; }
+.cart-item-price { font-size:13.5px; font-weight:700; color:#ff7b00; }
+
+.coupon-box { display:flex; justify-content:space-between; align-items:center; border:1px dashed #ffb877; background:#fff8f2; border-radius:10px; padding:12px 14px; margin:16px 0 4px; font-size:13.5px; color:#a34700; font-weight:600; cursor:pointer; transition:0.2s; }
+.coupon-box:hover { background:#fff2e2; border-color:#ff9d4d; }
+.coupon-box .chev { transition:transform 0.25s; }
+.coupon-box.open .chev { transform: rotate(90deg); }
+.coupon-panel { max-height:0; overflow:hidden; transition:max-height 0.3s ease; }
+.coupon-panel.open { max-height:160px; margin-bottom:16px; }
+.coupon-panel-inner { display:flex; gap:8px; padding-top:10px; flex-wrap:wrap; }
+.coupon-panel-inner input {
+  flex:1; min-width:150px; padding:10px 12px; border:1.5px solid #e2e2e2; border-radius:8px; font-size:13.5px;
+  font-family:inherit; text-transform:uppercase;
+}
+.coupon-panel-inner input:focus { outline:none; border-color:#ff7b00; }
+.coupon-apply-btn { padding:10px 18px; border:none; background:linear-gradient(90deg,#ff7b00,#ff4500); color:#fff; border-radius:8px; font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; }
+.coupon-apply-btn:hover { opacity:0.92; }
+.coupon-msg { font-size:12.5px; margin-top:8px; font-weight:600; width:100%; }
+.coupon-msg.ok { color:#00994d; }
+.coupon-msg.fail { color:#c0392b; }
+.coupon-suggestions { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; width:100%; }
+.coupon-chip {
+  font-size:11.5px; font-weight:700; background:#fff; border:1px dashed #ffb877; color:#a34700;
+  padding:4px 10px; border-radius:14px; cursor:pointer;
+}
+.coupon-chip:hover { background:#fff3e6; }
+.coupon-applied-badge {
+  display:inline-flex; align-items:center; gap:6px; background:#e9f9ef; color:#00994d; font-weight:700;
+  font-size:12.5px; padding:5px 12px; border-radius:16px;
+}
+
+.bill-heading { font-size:14px; font-weight:700; margin-bottom:10px; }
+.bill-row { display:flex; justify-content:space-between; font-size:13.5px; color:#555; margin-bottom:8px; }
+.bill-row.discount-row { color:#00994d; font-weight:700; }
+.bill-divider { border-top:1px dashed #e2e2e2; margin:12px 0; }
+.to-pay-row { display:flex; justify-content:space-between; font-size:17px; font-weight:800; }
+
+.empty-cart-msg { text-align:center; padding:60px 20px; color:#666; }
+.empty-cart-msg a { display:inline-block; margin-top:14px; background:linear-gradient(90deg,#ff7b00,#ff4500); color:#fff; padding:12px 28px; border-radius:30px; text-decoration:none; font-weight:700; }
+
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:999; }
+.modal-box { background:#fff; border-radius:14px; padding:24px; width:90%; max-width:460px; max-height:85vh; overflow-y:auto; }
+.modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+.close-btn { cursor:pointer; font-size:22px; color:#888; }
+
+.saved-addr-card {
+  border:1.5px solid #e2e2e2; border-radius:12px; padding:14px 16px; margin-bottom:12px;
+  cursor:pointer; transition:0.2s; position:relative;
+}
+.saved-addr-card:hover { border-color:#ffb877; }
+.saved-addr-card.selected { border-color:#ff7b00; background:#fff8f2; }
+.saved-addr-top { display:flex; align-items:flex-start; gap:10px; }
+.saved-addr-top input[type="radio"] { margin-top:3px; accent-color:#ff7b00; width:16px; height:16px; flex-shrink:0; }
+.saved-addr-tag {
+  display:inline-block; font-size:10.5px; font-weight:700; background:#fff2e6; color:#ff7b00;
+  padding:2px 9px; border-radius:10px; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.3px;
+}
+.saved-addr-name { font-weight:700; font-size:14px; }
+.saved-addr-phone { font-size:12.5px; color:#888; margin-left:6px; }
+.saved-addr-line { font-size:13px; color:#666; margin-top:4px; line-height:1.5; }
+.saved-addr-deliverbtn {
+  margin-top:10px; margin-left:26px; border:1.5px solid #00c853; color:#00994d; background:#fff;
+  padding:6px 16px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer; display:none;
+}
+.saved-addr-card.selected .saved-addr-deliverbtn { display:inline-block; }
+
+.address-radio { display:flex; gap:10px; border:1.5px solid #e2e2e2; border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer; font-size:13.5px; }
+.address-radio p { margin:4px 0 0; color:#666; }
+.modal-box input, .modal-box textarea { width:100%; border:1.5px solid #e2e2e2; border-radius:10px; padding:10px 12px; font-size:14px; margin-bottom:6px; font-family:inherit; box-sizing:border-box; }
+.modal-box h4 { margin:16px 0 8px; font-size:14px; }
+.pincode-status { font-size:13px; margin:2px 0 12px; min-height:18px; font-weight:600; }
+.pincode-status.ok { color:#00994d; }
+.pincode-status.fail { color:#c0392b; }
+.field-label { font-size:12px; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:0.4px; margin:14px 0 6px; }
+.field-label:first-of-type { margin-top:4px; }
+.area-chip-row { display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 4px; }
+.area-chip { border:1.5px solid #e2e2e2; background:#fff; color:#555; font-size:12.5px; font-weight:600; padding:7px 14px; border-radius:20px; cursor:pointer; transition:all 0.15s ease; }
+.area-chip:hover { border-color:#ff7b00; color:#ff7b00; background:#fff8f2; }
+.area-chip.active { border-color:#ff7b00; background:#ff7b00; color:#fff; }
+.gps-btn { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; border:1.5px solid #00c853; color:#00994d; background:#f4fff8; padding:11px; border-radius:10px; font-weight:700; font-size:13.5px; cursor:pointer; margin:4px 0 14px; }
+.gps-btn:hover { background:#e8ffef; }
+.add-new-toggle {
+  display:flex; align-items:center; gap:8px; color:#ff7b00; font-weight:700; font-size:13.5px;
+  cursor:pointer; padding:10px 0; border-top:1px solid #f0f0f0; margin-top:6px;
+}
+.add-new-form { display:none; margin-top:10px; }
+.add-new-form.open { display:block; }
+
+.nk-alert-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none;
+  align-items:center; justify-content:center; z-index:1100;
+}
+.nk-alert-overlay.show { display:flex; }
+.nk-alert-box {
+  background:#fff; border-radius:14px; padding:26px 24px; max-width:340px; width:88%;
+  text-align:center; box-shadow:0 14px 40px rgba(0,0,0,0.25); animation:nkAlertPop 0.18s ease-out;
+}
+@keyframes nkAlertPop { from{ transform:scale(0.9); opacity:0; } to{ transform:scale(1); opacity:1; } }
+.nk-alert-icon {
+  width:52px; height:52px; border-radius:50%; background:#fff2e6; color:#ff7b00; font-size:24px;
+  display:flex; align-items:center; justify-content:center; margin:0 auto 14px;
+}
+.nk-alert-box p { margin:0 0 18px; font-size:14px; color:#444; line-height:1.5; }
+.nk-alert-ok-btn { background:linear-gradient(90deg,#ff7b00,#ff4500); color:#fff; border:none; padding:10px 30px; border-radius:8px; font-weight:700; font-size:13.5px; cursor:pointer; }
+
+@media (max-width:760px){ .right-col{ position:static; order:-1; } }
+
+
+.site-footer {
+      background: #1c1c1c;
+      padding: 50px 60px 0;
+      margin-top: 40px;
+    }
+    .footer-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-bottom: 36px;
+      border-bottom: 1px solid rgba(255,179,71,0.15);
+    }
+    .footer-col { flex: 1; min-width: 200px; }
+    .footer-col h4 {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ffb347;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+    .footer-col a {
+      display: block;
+      color: #ccc;
+      text-decoration: none;
+      font-size: 13.5px;
+      margin-bottom: 10px;
+      transition: color 0.25s;
+    }
+    .footer-col a:hover { color: #ffb347; }
+    .footer-col p { color: #ccc; font-size: 13.5px; line-height: 1.7; margin: 0 0 10px; }
+    .footer-col p a { display: inline; color: #ffb347; }
+    .footer-bottom {
+      padding: 18px 0;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .footer-bottom p {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #999;
+    }
+    .footer-credit { font-size: 12px; letter-spacing: 1px; color: #999; }
+    .footer-credit strong { color: #ffb347; font-weight: 700; letter-spacing: 1.5px; }
+
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; background: #1c1c1c; color: #fff;
+      padding: 14px 20px; border-radius: 12px; font-size: 13.5px; box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+      z-index: 200; display: none; max-width: 320px;
+    }
+
+    /* ===== NK Bot chat widget ===== */
+    .nk-bot{position:fixed;bottom:26px;right:26px;width:60px;height:60px;border-radius:20px;background:linear-gradient(135deg,#ffb347,#ff7b00);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:999;box-shadow:0 8px 22px rgba(255,123,0,0.4);animation:nkFloat 3s ease-in-out infinite;}
+    @keyframes nkFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+    .nk-face{width:34px;height:28px;position:relative;}
+    .nk-eye{position:absolute;top:3px;width:7px;height:9px;background:#1c1c1c;border-radius:50%;animation:nkBlink 4.5s infinite;}
+    .nk-eye.l{left:4px}.nk-eye.r{right:4px}
+    @keyframes nkBlink{0%,92%,100%{height:9px}95%{height:1.5px}}
+    .nk-mouth{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:16px;height:8px;border-bottom:3px solid #1c1c1c;border-radius:0 0 16px 16px;}
+    .nk-chat{position:fixed;bottom:98px;right:26px;width:300px;max-height:400px;background:#1c1c1c;border-radius:16px;box-shadow:0 20px 44px rgba(0,0,0,0.5);display:none;flex-direction:column;overflow:hidden;z-index:1000;}
+    .nk-chat.open{display:flex;}
+    .nk-chat-h{background:linear-gradient(135deg,#ff7b00,#ffb347);padding:12px 14px;display:flex;align-items:center;gap:8px;}
+    .nk-chat-h span{color:#1c1c1c;font-weight:700;font-size:14px;}
+    .nk-chat-x{margin-left:auto;background:none;border:none;font-size:16px;cursor:pointer;color:#1c1c1c;}
+    .nk-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:#141414;}
+    .nk-msg{max-width:82%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4;}
+    .nk-msg.bot{background:#2a2a2a;color:#eee;align-self:flex-start;}
+    .nk-msg.user{background:linear-gradient(135deg,#ff7b00,#ffb347);color:#1c1c1c;align-self:flex-end;font-weight:600;}
+    .nk-foot{display:flex;gap:6px;padding:10px;background:#1c1c1c;border-top:1px solid #333;}
+    .nk-foot input{flex:1;background:#2a2a2a;border:1px solid #444;border-radius:18px;padding:8px 12px;color:#eee;font-size:13px;outline:none;}
+    .nk-foot button{width:34px;height:34px;border-radius:50%;border:none;background:linear-gradient(135deg,#ff7b00,#ffb347);cursor:pointer;}
+
+</style>
+
+{% if cart_items %}
+<form method="POST" class="checkout-wrap" id="checkoutForm">
+  {% csrf_token %}
+  <div class="left-col">
+
+    <!-- Step 1: Account -->
+    <div class="step-card">
+      <div class="step-icon {% if request.user.is_authenticated %}done{% endif %}">
+        {% if request.user.is_authenticated %}✓{% else %}1{% endif %}
+      </div>
+      <div class="step-body">
+        <h3>Account</h3>
+        {% if request.user.is_authenticated %}
+          <div class="account-ok">Logged in as <span class="user-badge">{{ request.user.username }}</span></div>
+        {% else %}
+          <p class="step-sub">To place your order now, log in to your existing account or sign up.</p>
+          <div class="account-actions">
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn-outline">Have an account? LOG IN</a>
+            <a href="{% url 'signup' %}?next={{ request.path }}" class="btn-outline">New here? SIGN UP</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if request.user.is_authenticated %}
+    <!-- Step 2: Address -->
+    <div class="step-card">
+      <div class="step-icon {% if active_address %}done{% endif %}">
+        {% if active_address %}✓{% else %}2{% endif %}
+      </div>
+      <div class="step-body">
+        <div class="address-header">
+          <h3>Delivery Address</h3>
+          <span class="change-location-link" onclick="openLocationModal()">📍 {% if active_address %}Change Address{% else %}Add Address{% endif %}</span>
+        </div>
+        {% if active_address %}
+          <div class="active-address">
+            <strong>{{ active_address.full_name }}</strong> | {{ active_address.phone_number }}
+            <p>{{ active_address.address_line }}, {{ active_address.area_name }} - {{ active_address.pincode }}</p>
+          </div>
+
+          <div class="eta-card" id="delivery-status-card" style="display:none;">
+            <div class="eta-icon" id="eta-icon">🛵</div>
+            <div class="eta-text">
+              <div class="eta-time" id="eta-time">Checking...</div>
+              <div class="eta-sub" id="eta-sub"></div>
+            </div>
+            <button type="button" class="eta-retry-btn" id="eta-retry-btn" style="display:none;" onclick="checkDeliveryEta()">Retry</button>
+          </div>
+        {% else %}
+          <p class="text-warning">Koi address nahi hai — "Add Address" pe click karke naya address add karo</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Step 3: Payment Method -->
+    <div class="step-card">
+      <div class="step-icon">3</div>
+      <div class="step-body">
+        <h3>Payment Method</h3>
+        <p class="step-sub">Choose how you'd like to pay for your order</p>
+        <div class="payment-options">
+          <label class="payment-option selected">
+            <input type="radio" name="payment_method" value="upi" checked>
+            📱 UPI (Scan & Pay)
+          </label>
+          <label class="payment-option {% if grand_total > 1000 %}disabled{% endif %}">
+            <input type="radio" name="payment_method" value="cod" {% if grand_total > 1000 %}disabled{% endif %}>
+            💵 Cash on Delivery
+            {% if grand_total > 1000 %}<span class="unavailable-tag">Available under ₹1000</span>{% endif %}
+          </label>
+          <label class="payment-option">
+            <input type="radio" name="payment_method" value="card">
+            💳 Credit / Debit Card
+          </label>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="right-col">
+    <div class="summary-card">
+      <div class="summary-title">Your Order</div>
+      {% for ci in cart_items %}
+      <div class="cart-item-row">
+        {% if ci.food.image %}<img src="{{ ci.food.image.url }}" alt="{{ ci.food.name }}">{% endif %}
+        <div class="cart-item-info">
+          <div class="name">{{ ci.food.name }}</div>
+          <div class="qty">Qty: {{ ci.quantity }}</div>
+        </div>
+        <div class="cart-item-price">₹{{ ci.subtotal }}</div>
+      </div>
+      {% endfor %}
+
+      <div class="coupon-box" id="couponBox" onclick="toggleCouponBox()">
+        <span id="couponLabel">🏷️ Apply Coupon</span>
+        <span class="chev">›</span>
+      </div>
+      <div class="coupon-panel" id="couponPanel">
+        <div class="coupon-panel-inner">
+          <input type="text" id="couponInput" placeholder="Enter coupon code" maxlength="15">
+          <button type="button" class="coupon-apply-btn" onclick="applyCoupon()">Apply</button>
+          <div class="coupon-msg" id="couponMsg"></div>
+          <div class="coupon-suggestions">
+            <span class="coupon-chip" onclick="quickCoupon('SAVE10')">SAVE10 — 10% off</span>
+            <span class="coupon-chip" onclick="quickCoupon('FLAT20')">FLAT20 — ₹20 off</span>
+          </div>
+        </div>
+      </div>
+      <input type="hidden" name="coupon_code" id="couponCodeHidden">
+
+      <div class="bill-heading">Bill Details</div>
+      <div class="bill-row"><span>Item Total</span><span>₹{{ total }}</span></div>
+      <div class="bill-row"><span>Delivery Fee</span><span>₹{{ delivery_fee }}</span></div>
+      <div class="bill-row"><span>GST & Other Charges</span><span>₹{{ gst_amount }}</span></div>
+      <div class="bill-row discount-row" id="discountRow" style="display:none;"><span>Coupon Discount</span><span id="discountAmount">-₹0</span></div>
+      <div class="bill-divider"></div>
+      <div class="to-pay-row"><span>TO PAY</span><span id="finalTotalDisplay">₹{{ grand_total }}</span></div>
+
+      <button type="submit" id="placeOrderBtn" class="place-order-btn"
+        {% if not request.user.is_authenticated or not active_address %}disabled{% endif %}>
+        Place Order
+      </button>
+    </div>
+  </div>
+</form>
+{% else %}
+  <div class="empty-cart-msg">
+    <h2>Your cart is empty</h2>
+    <p>Add some delicious food before checking out.</p>
+    <a href="{% url 'menu' %}">Browse Menu</a>
+  </div>
+{% endif %}
+
+<!-- Address Modal -->
+<div id="locationModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Delivery Address</h3>
+      <span class="close-btn" onclick="closeLocationModal()">&times;</span>
+    </div>
+
+    {% if addresses %}
+    <div class="field-label">Saved Addresses</div>
+    <div id="savedAddressList">
+      {% for addr in addresses %}
+      <div class="saved-addr-card {% if addr.is_active %}selected{% endif %}" onclick="selectSavedCard(this, {{ addr.id }})">
+        <div class="saved-addr-top">
+          <input type="radio" name="select_address" value="{{ addr.id }}" {% if addr.is_active %}checked{% endif %} onclick="event.stopPropagation();">
+          <div>
+            <span class="saved-addr-tag">Home</span><br>
+            <span class="saved-addr-name">{{ addr.full_name }}</span><span class="saved-addr-phone">{{ addr.phone_number }}</span>
+            <div class="saved-addr-line">{{ addr.address_line }}, {{ addr.area_name }} - {{ addr.pincode }}</div>
+          </div>
+        </div>
+        <button type="button" class="saved-addr-deliverbtn" onclick="event.stopPropagation(); confirmDeliverHere({{ addr.id }})">Deliver Here</button>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="add-new-toggle" onclick="toggleAddNewForm()">
+      <span id="addNewChev">＋</span> <span id="addNewLabel">Add a new address</span>
+    </div>
+    {% endif %}
+
+    <div class="add-new-form {% if not addresses %}open{% endif %}" id="addNewForm">
+      <div class="field-label">Add New Address</div>
+      <input type="text" id="newName" placeholder="Full name" value="{{ prefill_name }}">
+      <input type="tel" id="newPhone" placeholder="Phone number" value="{{ prefill_phone }}" maxlength="10" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)">
+
+      <div class="field-label">Delivery Area</div>
+      <div class="area-chip-row" id="areaChipRow">
+        {% for zone in zone_list %}
+        <button type="button" class="area-chip" data-pincode="{{ zone.pincode }}" onclick="pickArea('{{ zone.pincode }}')">{{ zone.name }}</button>
+        {% endfor %}
+      </div>
+
+      <button type="button" class="gps-btn" onclick="useCurrentLocationForPincode()">
+        📍 Use my current location
+      </button>
+
+      <input type="text" id="newPincode" placeholder="Or enter pincode manually" maxlength="6" oninput="onPincodeChange()">
+      <div class="pincode-status" id="pincodeStatus"></div>
+
+      <div class="field-label">Address Details</div>
+      <textarea id="newAddress" rows="2" placeholder="House no, street, area, landmark"></textarea>
+
+      <button class="place-order-btn" type="button" onclick="saveNewAddress()">Save & Use This Address</button>
+    </div>
+  </div>
+</div>
+
+<!-- Custom alert popup (replaces browser alert()) -->
+<div class="nk-alert-overlay" id="nkAlertOverlay">
+  <div class="nk-alert-box">
+    <div class="nk-alert-icon">⚠️</div>
+    <p id="nkAlertMsg">Something's missing</p>
+    <button class="nk-alert-ok-btn" onclick="closeNkAlert()">OK</button>
+  </div>
+</div>
+<footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-col">
+        <h4>About</h4>
+        <a href="/about/">About NK's Hub</a>
+        <a href="/menu/">Our Menu</a>
+        <a href="{% url 'my_orders' %}">My Orders</a>
+        
+      </div>
+
+      <div class="footer-col" id="help">
+        <h4>Help</h4>
+        <a href="{% url 'help' %}">FAQ</a>
+        <a href="/about/">Payments</a>
+        <a href="{% url 'my_orders' %}">Track Order</a>
+        <a href="{% url 'cart' %}">Cancellation & Returns</a>
+        <a href="mailto:nachiketdhakad@gmail.com">Contact Us</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Mail us: <a href="mailto:nachiketdhakad@gmail.com">nachiketdhakad@gmail.com</a></p>
+        <p>Registered Office:<br>Khedawda, Ujjain,<br>Madhya Pradesh, India</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>NK's Hub — Indore © 2026</p>
+      <p class="footer-credit">Designed by <strong>Nachiket Dhakad</strong></p>
+    </div>
+  </footer>
+<script>
+function nkAlert(msg){
+  document.getElementById('nkAlertMsg').textContent = msg;
+  document.getElementById('nkAlertOverlay').classList.add('show');
+}
+function closeNkAlert(){
+  document.getElementById('nkAlertOverlay').classList.remove('show');
+}
+
+function openLocationModal(){ document.getElementById('locationModal').style.display='flex'; }
+function closeLocationModal(){ document.getElementById('locationModal').style.display='none'; }
+
+function toggleAddNewForm(){
+  const form = document.getElementById('addNewForm');
+  const chev = document.getElementById('addNewChev');
+  form.classList.toggle('open');
+  chev.textContent = form.classList.contains('open') ? '−' : '＋';
+}
+
+function selectSavedCard(cardEl, id){
+  document.querySelectorAll('.saved-addr-card').forEach(c => c.classList.remove('selected'));
+  cardEl.classList.add('selected');
+  cardEl.querySelector('input[type="radio"]').checked = true;
+}
+
+function confirmDeliverHere(id){
+  fetch(`/set-active-address/${id}/`, {
+    method:'POST',
+    headers:{'X-CSRFToken': getCookie('csrftoken')}
+  }).then(()=> location.reload());
+}
+
+function getCookie(name){
+  let v=null;
+  document.cookie.split(';').forEach(c=>{
+    c=c.trim();
+    if(c.startsWith(name+'=')) v=decodeURIComponent(c.split('=')[1]);
+  });
+  return v;
+}
+
+let pincodeDeliverable = false;
+let pincodeCheckTimer = null;
+
+function pickArea(pincode){
+  document.getElementById('newPincode').value = pincode;
+  document.querySelectorAll('.area-chip').forEach(chip => {
+    chip.classList.toggle('active', chip.dataset.pincode === pincode);
+  });
+  onPincodeChange();
+}
+
+function useCurrentLocationForPincode(){
+  if(!navigator.geolocation){ nkAlert('Geolocation is not supported on this browser'); return; }
+
+  const statusEl = document.getElementById('pincodeStatus');
+  statusEl.innerText = 'Detecting your location...';
+  statusEl.className = 'pincode-status';
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    fetch(`/nearest-zone/?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.pincode) {
+          document.getElementById('newPincode').value = data.pincode;
+          document.querySelectorAll('.area-chip').forEach(chip => {
+            chip.classList.toggle('active', chip.dataset.pincode === data.pincode);
+          });
+          onPincodeChange();
+        } else {
+          statusEl.innerText = '❌ ' + (data.message || 'Your location is outside our delivery zones');
+          statusEl.className = 'pincode-status fail';
+        }
+      })
+      .catch(() => {
+        statusEl.innerText = '⚠️ Could not check location, please try again';
+        statusEl.className = 'pincode-status fail';
+      });
+  }, () => {
+    statusEl.innerText = '⚠️ Please allow location access in your browser';
+    statusEl.className = 'pincode-status fail';
+  });
+}
+
+function onPincodeChange(){
+  const pincode = document.getElementById('newPincode').value.trim();
+  const statusEl = document.getElementById('pincodeStatus');
+
+  document.querySelectorAll('.area-chip').forEach(chip => {
+    chip.classList.toggle('active', chip.dataset.pincode === pincode);
+  });
+
+  pincodeDeliverable = false;
+  clearTimeout(pincodeCheckTimer);
+
+  if (pincode.length !== 6) {
+    statusEl.innerText = '';
+    statusEl.className = 'pincode-status';
+    return;
+  }
+
+  statusEl.innerText = 'Checking availability...';
+  statusEl.className = 'pincode-status';
+
+  pincodeCheckTimer = setTimeout(() => {
+    fetch(`/check-pincode/?pincode=${pincode}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Server error ' + res.status);
+        return res.json();
+      })
+      .then(data => {
+        if (data.deliverable) {
+          pincodeDeliverable = true;
+          statusEl.innerText = `✅ Delivery available in ${data.area_name} — Est. ${data.duration}`;
+          statusEl.className = 'pincode-status ok';
+        } else {
+          pincodeDeliverable = false;
+          statusEl.innerText = `❌ ${data.message}`;
+          statusEl.className = 'pincode-status fail';
+        }
+      })
+      .catch(err => {
+        pincodeDeliverable = false;
+        statusEl.innerText = '⚠️ Could not check this pincode — please try again';
+        statusEl.className = 'pincode-status fail';
+        console.error('Pincode check failed:', err);
+      });
+  }, 400);
+}
+
+function saveNewAddress(){
+  const name = document.getElementById('newName').value.trim();
+  const phone = document.getElementById('newPhone').value.trim();
+  const pincode = document.getElementById('newPincode').value.trim();
+  const addr = document.getElementById('newAddress').value.trim();
+
+  if(!name || !phone || !pincode || !addr){
+    nkAlert('Please fill in name, phone, pincode and address');
+    return;
+  }
+
+  if(!/^[0-9]{10}$/.test(phone)){
+    nkAlert('Phone number exactly 10 digits ka hona chahiye');
+    return;
+  }
+
+  if(!pincodeDeliverable){
+    nkAlert('Delivery is not available for this pincode — please choose a valid one');
+    return;
+  }
+
+  const data = new FormData();
+  data.append('full_name', name);
+  data.append('phone_number', phone);
+  data.append('pincode', pincode);
+  data.append('address_line', addr);
+
+  fetch("{% url 'add_address' %}", {
+    method:'POST',
+    headers:{'X-CSRFToken': getCookie('csrftoken')},
+    body: data
+  }).then(r=>r.json()).then(res=>{
+    if(res.success) location.reload();
+    else nkAlert(res.error || 'Address save nahi hui');
+  });
+}
+
+document.querySelectorAll('.payment-option:not(.disabled)').forEach(opt=>{
+  opt.addEventListener('click', function(){
+    document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected'));
+    this.classList.add('selected');
+    this.querySelector('input[type="radio"]').checked = true;
+  });
+});
+
+/* ---------------- Coupon logic ---------------- */
+const CART_TOTAL = {{ total }};
+const DELIVERY_FEE = {{ delivery_fee }};
+const GST_AMOUNT = {{ gst_amount }};
+const BASE_GRAND_TOTAL = {{ grand_total }};
+let couponDiscount = 0;
+
+function toggleCouponBox(){
+  const panel = document.getElementById('couponPanel');
+  const box = document.getElementById('couponBox');
+  panel.classList.toggle('open');
+  box.classList.toggle('open');
+}
+
+function quickCoupon(code){
+  document.getElementById('couponInput').value = code;
+  applyCoupon();
+}
+
+function applyCoupon(){
+  const code = document.getElementById('couponInput').value.trim().toUpperCase();
+  const msg = document.getElementById('couponMsg');
+
+  if(!code){
+    msg.className = 'coupon-msg fail';
+    msg.textContent = 'Please enter a coupon code';
+    return;
+  }
+
+  const valid = {
+    'SAVE10': { type:'percent', value:10, text:'10% off applied 🎉' },
+    'FLAT20': { type:'flat', value:20, text:'₹20 off applied 🎉' },
+  };
+
+  if(valid[code]){
+    const c = valid[code];
+    couponDiscount = c.type === 'percent'
+      ? Math.round(BASE_GRAND_TOTAL * (c.value / 100))
+      : c.value;
+
+    document.getElementById('couponCodeHidden').value = code;
+    document.getElementById('couponLabel').innerHTML = `<span class="coupon-applied-badge">✅ ${code} applied</span>`;
+    msg.className = 'coupon-msg ok';
+    msg.textContent = c.text;
+
+    document.getElementById('discountRow').style.display = 'flex';
+    document.getElementById('discountAmount').textContent = '-₹' + couponDiscount;
+    document.getElementById('finalTotalDisplay').textContent = '₹' + (BASE_GRAND_TOTAL - couponDiscount);
+  } else {
+    couponDiscount = 0;
+    document.getElementById('couponCodeHidden').value = '';
+    msg.className = 'coupon-msg fail';
+    msg.textContent = 'Invalid coupon code';
+    document.getElementById('discountRow').style.display = 'none';
+    document.getElementById('finalTotalDisplay').textContent = '₹' + BASE_GRAND_TOTAL;
+  }
+}
+
+/* ---------------- Delivery ETA ---------------- */
+{% if active_address %}
+function checkDeliveryEta(){
+  const card = document.getElementById('delivery-status-card');
+  const icon = document.getElementById('eta-icon');
+  const timeEl = document.getElementById('eta-time');
+  const subEl = document.getElementById('eta-sub');
+  const retryBtn = document.getElementById('eta-retry-btn');
+
+  card.style.display = 'flex';
+  card.classList.remove('error');
+  icon.textContent = '⏳';
+  timeEl.textContent = 'Checking delivery time...';
+  subEl.textContent = '';
+  retryBtn.style.display = 'none';
+
+  fetch(`/nearest-outlet/?lat={{ active_address.latitude }}&lng={{ active_address.longitude }}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.outlet_name) {
+        card.classList.remove('error');
+        icon.textContent = '🛵';
+        timeEl.textContent = 'Delivery in ' + data.duration;
+        subEl.textContent = 'From ' + data.outlet_name;
+        retryBtn.style.display = 'none';
+        document.getElementById('placeOrderBtn').disabled = false;
+      } else {
+        card.classList.add('error');
+        icon.textContent = '❌';
+        timeEl.textContent = 'Delivery not available here';
+        subEl.textContent = data.message || 'Try a different address';
+        retryBtn.style.display = 'inline-block';
+        document.getElementById('placeOrderBtn').disabled = true;
+      }
+    })
+    .catch(() => {
+      card.classList.add('error');
+      icon.textContent = '⚠️';
+      timeEl.textContent = "Couldn't fetch delivery time";
+      subEl.textContent = 'Check your connection and try again';
+      retryBtn.style.display = 'inline-block';
+    });
+}
+checkDeliveryEta();
+{% else %}
+document.addEventListener('DOMContentLoaded', openLocationModal);
+{% endif %}
+</script>
+{% endblock %}

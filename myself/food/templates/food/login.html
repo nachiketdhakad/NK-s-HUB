@@ -1,0 +1,259 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - NK's Hub</title>
+  <link rel="stylesheet" href="{% static 'food/style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #14100c;
+      color: #fff;
+    }
+
+    /* ===== NAVBAR ===== */
+    header.navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 60px; background: #14100c;
+    }
+    .logo-group { display: flex; align-items: center; gap: 12px; }
+    .logo-badge {
+      width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid #d9a94e;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif; color: #d9a94e; font-weight: 700; font-size: 15px;
+    }
+    .logo-text { font-family: 'Playfair Display', serif; font-size: 22px; color: #f4e9d8; }
+    header.navbar nav a {
+      color: #ddd3c4; text-decoration: none; margin: 0 18px; font-size: 13px;
+      letter-spacing: 1.5px; font-weight: 500; transition: 0.25s; position: relative;
+    }
+    header.navbar nav a::after {
+      content: ''; position: absolute; left: 0; bottom: -6px; width: 0; height: 1.5px;
+      background: #d9a94e; transition: width 0.3s ease;
+    }
+    header.navbar nav a:hover { color: #d9a94e; }
+    header.navbar nav a:hover::after { width: 100%; }
+
+    /* ===== LOGIN SPLIT LAYOUT ===== */
+    .login-wrap {
+      display: flex; max-width: 1300px; margin: 40px auto 70px; border-radius: 26px;
+      overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      min-height: 620px;
+    }
+
+    .login-image {
+      flex: 1.1; position: relative; overflow: hidden; min-width: 320px;
+    }
+    .login-image img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transform: scale(1.05);
+      animation: slowZoom 12s ease-in-out infinite alternate;
+    }
+    @keyframes slowZoom {
+      from { transform: scale(1.05); }
+      to   { transform: scale(1.15); }
+    }
+    .login-image::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(20,16,12,0) 40%, rgba(20,16,12,0.85) 100%),
+                  linear-gradient(90deg, rgba(20,16,12,0.15), rgba(20,16,12,0));
+    }
+    .image-caption {
+      position: absolute; bottom: 34px; left: 34px; z-index: 2;
+      font-family: 'Playfair Display', serif; font-size: 22px; color: #f4e9d8;
+      max-width: 320px; line-height: 1.4;
+    }
+    .image-caption span { color: #d9a94e; }
+
+    .login-form-side {
+      flex: 1; background: #1b1611; padding: 70px 70px; display: flex;
+      flex-direction: column; justify-content: center; position: relative;
+    }
+    .login-form-side::before {
+      content: '';
+      position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+      background: linear-gradient(90deg, transparent, #d9a94e, transparent);
+    }
+
+    .welcome-eyebrow { color: #d9a94e; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 14px; text-align: center; }
+    .login-form-side h1 {
+      font-family: 'Playfair Display', serif; font-size: 40px; margin: 0 0 8px;
+      text-align: center; color: #f7ecdd;
+    }
+    .login-sub { text-align: center; color: #9c9184; font-size: 14px; margin-bottom: 44px; }
+
+    /* floating label inputs */
+    .field {
+      position: relative; margin-bottom: 30px;
+    }
+    .field i.field-icon {
+      position: absolute; left: 0; top: 16px; color: #7a6f5f; font-size: 15px; transition: color 0.25s ease;
+    }
+    .field input {
+      width: 100%; background: transparent; border: none; border-bottom: 1px solid #3a332a;
+      color: #f4e9d8; font-family: 'Poppins', sans-serif; font-size: 15px;
+      padding: 12px 30px 12px 26px; outline: none; transition: border-color 0.3s ease;
+    }
+    .field label {
+      position: absolute; left: 26px; top: 12px; color: #8b8072; font-size: 14.5px;
+      pointer-events: none; transition: 0.25s ease;
+    }
+    .field input:focus,
+    .field input:not(:placeholder-shown) {
+      border-bottom-color: #d9a94e;
+    }
+    .field input:focus + label,
+    .field input:not(:placeholder-shown) + label {
+      top: -12px; font-size: 11.5px; color: #d9a94e; letter-spacing: 0.5px;
+    }
+    .field input:focus ~ i.field-icon,
+    .field:has(input:not(:placeholder-shown)) i.field-icon {
+      color: #d9a94e;
+    }
+
+    .toggle-pass {
+      position: absolute; right: 0; top: 14px; color: #7a6f5f; cursor: pointer; font-size: 14px;
+      transition: color 0.2s ease;
+    }
+    .toggle-pass:hover { color: #d9a94e; }
+
+    .row-between {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12.5px; color: #9c9184; margin: -10px 0 32px;
+    }
+    .row-between a { color: #d9a94e; text-decoration: none; }
+    .remember-me { display: flex; align-items: center; gap: 7px; }
+    .remember-me input { accent-color: #d9a94e; }
+
+    .login-btn {
+      width: 100%; padding: 16px; border: none; border-radius: 10px;
+      background: linear-gradient(135deg, #eec871, #d9a94e);
+      color: #1b1611; font-weight: 700; font-size: 14.5px; letter-spacing: 1.5px;
+      text-transform: uppercase; cursor: pointer; position: relative; overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+    .login-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(217,169,78,0.35);
+    }
+    .login-btn::before {
+      content: '';
+      position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
+      transform: skewX(-20deg);
+      animation: shimmer 3.2s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%   { left: -60%; }
+      50%  { left: 130%; }
+      100% { left: 130%; }
+    }
+
+    .divider {
+      display: flex; align-items: center; gap: 14px; margin: 34px 0 26px; color: #6f6555; font-size: 12px;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #332c22; }
+
+    .social-login { display: flex; gap: 14px; justify-content: center; margin-bottom: 34px; }
+    .social-login button {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 12px; border-radius: 10px; border: 1px solid #332c22; background: transparent;
+      color: #d8cfc0; font-size: 13.5px; cursor: pointer; transition: 0.25s ease;
+    }
+    .social-login button:hover { border-color: #d9a94e; color: #d9a94e; transform: translateY(-2px); }
+    .social-login .fa-google { color: #ea4335; }
+
+    .signup-note { text-align: center; color: #9c9184; font-size: 13.5px; }
+    .signup-note a { color: #d9a94e; text-decoration: none; font-weight: 600; }
+    .signup-note a:hover { text-decoration: underline; }
+
+    @media (max-width: 900px) {
+      .login-wrap { flex-direction: column; margin: 0; border-radius: 0; }
+      .login-image { min-height: 260px; }
+      .login-form-side { padding: 50px 30px; }
+      header.navbar { padding: 16px 24px; }
+      header.navbar nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo-group">
+      <div class="logo-badge">NK</div>
+      <div class="logo-text">NK's Hub</div>
+    </div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/menu/">Menu</a>
+      <a href="{% url 'login' %}">Login</a>
+      <a href="/about/">About Us</a>
+    </nav>
+  </header>
+
+  <div class="login-wrap">
+
+    <div class="login-image">
+      <img src="{% static 'food/images/burger.jpg' %}" alt="Delicious Burger">
+      <div class="image-caption">Crafted fresh, <span>served with love.</span></div>
+    </div>
+
+    <div class="login-form-side">
+      <div class="welcome-eyebrow">NK's Hub</div>
+      <h1>Welcome Back</h1>
+      <p class="login-sub">Login to your account</p>
+
+      <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <div class="field">
+          <i class="fa-regular fa-envelope field-icon"></i>
+          <input type="text" name="username" id="username" placeholder=" " required>
+          <label for="username">Email or Phone Number</label>
+        </div>
+
+        <div class="field">
+          <i class="fa-solid fa-lock field-icon"></i>
+          <input type="password" name="password" id="password" placeholder=" " required>
+          <label for="password">Password</label>
+          <span class="toggle-pass" onclick="togglePassword()"><i class="fa-regular fa-eye" id="toggleIcon"></i></span>
+        </div>
+
+        <div class="row-between">
+          <label class="remember-me"><input type="checkbox" name="remember"> Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+
+      <p class="signup-note">New here? <a href="{% url 'signup' %}">Create an account</a></p>
+    </div>
+
+  </div>
+
+  <script>
+    function togglePassword() {
+      const pass = document.getElementById('password');
+      const icon = document.getElementById('toggleIcon');
+      if (pass.type === 'password') {
+        pass.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        pass.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+  </script>
+
+</body>
+</html>

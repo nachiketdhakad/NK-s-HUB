@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Favourites - NK's Hub</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Poppins', sans-serif; background: #fff8f2; color: #222; }
+    header.navbar { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 60px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+    header.navbar .logo { font-size: 26px; font-weight: bold; color: #ff4500; text-decoration: none; }
+    header.navbar nav a { color: #333; text-decoration: none; margin: 0 15px; font-weight: 500; }
+    .wrap { max-width: 1000px; margin: 30px auto 60px; padding: 0 20px; }
+    .wrap h2 { font-size: 24px; margin-bottom: 24px; }
+    .fav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    .fav-card { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.06); position: relative; }
+    .fav-card img { width: 100%; height: 150px; object-fit: cover; }
+    .fav-body { padding: 14px; }
+    .fav-body strong { font-size: 15px; }
+    .fav-body .price { color: #ff7b00; font-weight: 700; margin-top: 4px; font-size: 14px; }
+    .remove-fav-btn {
+      position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,0.9); border: none; color: #ff4d4d; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: 0.2s;
+    }
+    .remove-fav-btn:hover { background: #fff; transform: scale(1.1); }
+    .empty-fav { text-align: center; color: #666; padding: 80px 0; }
+    .empty-fav a { display: inline-block; margin-top: 14px; background: linear-gradient(90deg, #00c853, #00994d); color: #fff; padding: 12px 28px; border-radius: 30px; text-decoration: none; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <a href="/" class="logo">NK's Hub</a>
+    <nav>
+      <a href="/menu/">Menu</a>
+      <a href="{% url 'my_account' %}">My Account</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <h2>❤️ My Favourites</h2>
+    {% if favourites %}
+      <div class="fav-grid">
+        {% for fav in favourites %}
+          <div class="fav-card" id="fav-{{ fav.food_item.id }}">
+            {% if fav.food_item.image %}
+              <img src="{{ fav.food_item.image.url }}" alt="{{ fav.food_item.name }}">
+            {% endif %}
+            <button class="remove-fav-btn" onclick="removeFav({{ fav.food_item.id }})">✕</button>
+            <div class="fav-body">
+              <strong>{{ fav.food_item.name }}</strong>
+              <div class="price">₹{{ fav.food_item.discounted_price }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-fav">
+        <p>Aapne abhi tak kuch favourite nahi kiya.</p>
+        <a href="{% url 'menu' %}">Browse Menu</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    function getCookie(name) {
+      const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return v ? v.pop() : '';
+    }
+    function removeFav(pk) {
+      fetch(`/favourite/toggle/${pk}/`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': getCookie('csrftoken') }
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          const card = document.getElementById('fav-' + pk);
+          if (card) card.remove();
+        }
+      });
+    }
+  </script>
+</body>
+</html>

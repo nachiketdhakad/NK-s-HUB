@@ -1,0 +1,30 @@
+{% extends 'food/base.html' %}
+{% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<div class="payment-box">
+  <h2>Complete Payment</h2>
+  <p>Amount: <strong>₹{{ total_amount }}</strong></p>
+
+  <div id="qrSection">
+    <h3>Scan QR and Pay</h3>
+    <div id="qrcode"></div>
+    <p class="text-muted">Do not close this screen until payment completes</p>
+    <p id="statusText">Waiting for payment...</p>
+  </div>
+</div>
+
+<script>
+new QRCode(document.getElementById("qrcode"), {
+  text: "{{ upi_string|escapejs }}",
+  width: 220,
+  height: 220
+});
+
+// Ye sirf simulation hai — real payment gateway nahi hai
+setTimeout(()=>{
+  document.getElementById('statusText').innerText = "✅ Payment Successful!";
+  setTimeout(()=>{ window.location.href = "{% url 'confirm_payment' %}"; }, 1500);
+}, 5000); // 5 sec baad auto "scan ho gaya" simulate karega
+</script>
+{% endblock %}

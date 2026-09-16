@@ -1,0 +1,8 @@
+<!DO<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Food name"><br>
+    <textarea name="description" placeholder="Description"></textarea><br>
+    <input type="number" name="price" placeholder="Price"><br>
+    <input type="file" name="image"><br>
+    <button type="submit">Upload</button>
+</form>

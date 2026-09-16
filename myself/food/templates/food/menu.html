@@ -1,0 +1,794 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu - NK's Hub</title>
+  <link rel="stylesheet" href="{% static 'food/style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #fdf6ef;
+      min-height: 100vh;
+      color: #2b2b2b;
+    }
+
+    header.navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #1c1c1c;
+      padding: 16px 60px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.18);
+      flex-wrap: wrap;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 60;
+    }
+    header.navbar .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #ffb347;
+      letter-spacing: 0.5px;
+    }
+    header.navbar nav { display: flex; align-items: center; }
+    header.navbar nav a {
+      color: #e8e8e8;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: 500;
+      font-size: 14.5px;
+      transition: 0.25s;
+      position: relative;
+    }
+    header.navbar nav a:hover { color: #ffb347; }
+    .cart-indicator {
+      background: linear-gradient(135deg, #ff7b00, #ff4500);
+      color: #fff;
+      padding: 9px 18px;
+      border-radius: 22px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(255,90,0,0.35);
+      transition: 0.2s;
+    }
+    .cart-indicator:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,90,0,0.45); }
+
+    .search-strip { padding: 24px 60px 0; max-width: 1200px; margin: 0 auto; }
+    .search-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .search-box {
+      display: flex; align-items: center; background: #fff;
+      border-radius: 14px; padding: 13px 20px; gap: 10px; max-width: 480px; flex: 1; min-width: 240px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06); border: 1px solid #f0e4d8;
+    }
+    .search-box input {
+      border: none; background: transparent; outline: none;
+      font-size: 14px; width: 100%; font-family: 'Poppins', sans-serif;
+    }
+
+    .sortby-wrap { position: relative; }
+    .sortby-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: #fff; border: 1.5px solid #eee; border-radius: 20px;
+      padding: 12px 20px; font-size: 13.5px; font-weight: 600; color: #333;
+      cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.05); transition: 0.2s;
+      font-family: 'Poppins', sans-serif; white-space: nowrap;
+    }
+    .sortby-btn:hover { border-color: #ff7b00; }
+    .sortby-btn .chev { font-size: 11px; color: #999; }
+    .sortby-menu {
+      display: none; position: absolute; top: calc(100% + 8px); left: 0;
+      background: #fff; border-radius: 14px; box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+      padding: 16px 20px; min-width: 220px; z-index: 40;
+    }
+    .sortby-menu.open { display: block; }
+    .sortby-menu label {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13.5px; font-weight: 500; color: #333;
+      padding: 8px 0; cursor: pointer;
+    }
+    .sortby-menu input[type="radio"] { accent-color: #ff7b00; width: 15px; height: 15px; }
+
+    .quick-filter-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .quick-filter-pill {
+      padding: 8px 18px; border-radius: 20px; background: #fff; border: 1.5px solid #eee;
+      font-size: 13px; font-weight: 600; color: #555; cursor: pointer; transition: 0.2s;
+    }
+    .quick-filter-pill:hover { border-color: #ff7b00; }
+    .quick-filter-pill.active {
+      background: #fff3e8; color: #ff7b00; border-color: #ff7b00;
+    }
+
+    .category-strip-wrap { padding: 30px 60px 10px; max-width: 1200px; margin: 0 auto; }
+    .category-strip-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700; color: #1c1c1c; margin-bottom: 18px;
+    }
+    .category-strip { display: flex; gap: 30px; overflow-x: auto; padding-bottom: 10px; }
+    .category-strip::-webkit-scrollbar { height: 6px; }
+    .category-strip::-webkit-scrollbar-thumb { background: #ffcfa3; border-radius: 10px; }
+    .cat-circle {
+      display: flex; flex-direction: column; align-items: center; gap: 9px;
+      cursor: pointer; flex-shrink: 0; opacity: 0.7; transition: 0.25s;
+    }
+    .cat-circle:hover, .cat-circle.active { opacity: 1; transform: translateY(-3px); }
+    .cat-circle .circle-img {
+      width: 90px; height: 90px; border-radius: 50%; background: #fff;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12); border: 3px solid transparent; transition: 0.25s;
+    }
+    .cat-circle .circle-img img { width: 100%; height: 100%; object-fit: cover; }
+    .cat-circle.active .circle-img { border-color: #ff7b00; box-shadow: 0 8px 20px rgba(255,123,0,0.35); }
+    .cat-circle span.label { font-size: 13.5px; font-weight: 600; color: #333; }
+
+    .pref-strip { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    .pref-pill {
+      padding: 8px 20px; border-radius: 20px; background: #fff; border: 1.5px solid #eee;
+      font-size: 13px; font-weight: 600; color: #555; cursor: pointer; transition: 0.2s;
+    }
+    .pref-pill:hover { border-color: #ff7b00; }
+    .pref-pill.active { background: #ff7b00; color: #fff; border-color: #ff7b00; box-shadow: 0 4px 12px rgba(255,123,0,0.3); }
+
+    .main-content { max-width: 1200px; margin: 0 auto; padding: 10px 60px 100px; }
+
+    .banner {
+      background: linear-gradient(120deg, #ff7b00, #ff4500 70%);
+      border-radius: 22px;
+      padding: 34px 42px; color: #fff; margin: 24px 0 30px;
+      box-shadow: 0 14px 34px rgba(255,90,0,0.28);
+      position: relative; overflow: hidden;
+    }
+    .banner::after {
+      content: ""; position: absolute; right: -40px; top: -40px; width: 180px; height: 180px;
+      background: rgba(255,255,255,0.08); border-radius: 50%;
+    }
+    .banner h1 { margin: 0 0 8px; font-family: 'Playfair Display', serif; font-size: 30px; }
+    .banner p { margin: 0; opacity: 0.92; font-size: 15px; }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px; font-weight: 700; color: #1c1c1c; margin: 30px 0 18px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
+
+    .food-card {
+      background: #fff; border-radius: 20px; overflow: hidden;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      display: block; text-decoration: none; color: inherit;
+      border: 1px solid #f4ece2;
+    }
+    .food-card:hover { transform: translateY(-8px); box-shadow: 0 20px 36px rgba(0,0,0,0.16); }
+
+    .card-image-wrap { position: relative; }
+    .food-card img.dish-img { width: 100%; height: 170px; object-fit: cover; display: block; }
+
+    .discount-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: linear-gradient(135deg, #ff4500, #ff7b00); color: #fff;
+      font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3); letter-spacing: 0.3px;
+    }
+    .rating-badge {
+      position: absolute; top: 12px; right: 12px; background: rgba(20,20,20,0.75); color: #ffd700;
+      font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 20px;
+      backdrop-filter: blur(3px);
+    }
+    .pref-dot {
+      position: absolute; bottom: 12px; left: 12px; width: 19px; height: 19px;
+      border: 2px solid #fff; border-radius: 5px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .pref-dot.veg { background: #0a8a0a; }
+    .pref-dot.nonveg { background: #b30000; }
+    .pref-dot .inner-dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+
+    .views-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #9a9a9a;
+      background: #f6f1ea;
+      padding: 3px 9px;
+      border-radius: 12px;
+      margin-top: 7px;
+      width: fit-content;
+    }
+    .food-card .card-body { padding: 16px 18px 20px; }
+    .food-card h3 { margin: 0 0 4px; font-size: 16.5px; color: #1c1c1c; font-weight: 700; }
+    .food-card .tagline {
+      font-size: 12.5px; color: #999; margin: 0 0 10px; font-style: italic;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .food-card .bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .price-box { display: flex; flex-direction: column; }
+    .old-price { font-size: 12px; color: #b5b5b5; text-decoration: line-through; }
+    .food-card .price { font-weight: 700; color: #ff7b00; font-size: 16px; }
+
+    .btn-cart {
+      border: none; color: #fff; padding: 9px 18px; border-radius: 22px; font-size: 12.5px;
+      font-weight: 600; cursor: pointer; transition: 0.2s;
+      background: linear-gradient(135deg, #00c853, #00994d);
+      box-shadow: 0 4px 12px rgba(0,153,77,0.3);
+      position: relative; z-index: 5;
+    }
+    .btn-cart:hover { transform: scale(1.06); }
+    .btn-cart:disabled { opacity: 0.7; cursor: default; transform: none; }
+
+    .no-results {
+      color: #888; font-weight: 500; font-size: 16px; text-align: center; padding: 50px; grid-column: 1 / -1;
+    }
+
+    footer { text-align: center; color: #777; padding: 26px; font-size: 13.5px; background: #1c1c1c; color: #ccc; margin-top: 40px; }
+
+    .added-bar {
+      position: fixed; left: 0; right: 0; bottom: 0; background: #00994d; color: #fff;
+      display: none; align-items: center; justify-content: space-between; padding: 16px 30px;
+      font-weight: 600; font-size: 14px; z-index: 100; box-shadow: 0 -4px 18px rgba(0,0,0,0.25);
+    }
+    .added-bar a { color: #fff; font-weight: 700; text-decoration: underline; }
+
+    .site-footer {
+      background: #1c1c1c;
+      padding: 50px 60px 0;
+      margin-top: 40px;
+    }
+    .footer-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-bottom: 36px;
+      border-bottom: 1px solid rgba(255,179,71,0.15);
+    }
+    .footer-col { flex: 1; min-width: 200px; }
+    .footer-col h4 {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ffb347;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+    .footer-col a {
+      display: block;
+      color: #ccc;
+      text-decoration: none;
+      font-size: 13.5px;
+      margin-bottom: 10px;
+      transition: color 0.25s;
+    }
+    .footer-col a:hover { color: #ffb347; }
+    .footer-col p { color: #ccc; font-size: 13.5px; line-height: 1.7; margin: 0 0 10px; }
+    .footer-col p a { display: inline; color: #ffb347; }
+    .footer-bottom {
+      padding: 18px 0;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .footer-bottom p {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #999;
+    }
+    .footer-credit { font-size: 12px; letter-spacing: 1px; color: #999; }
+    .footer-credit strong { color: #ffb347; font-weight: 700; letter-spacing: 1.5px; }
+
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; background: #1c1c1c; color: #fff;
+      padding: 14px 20px; border-radius: 12px; font-size: 13.5px; box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+      z-index: 200; display: none; max-width: 320px;
+    }
+
+    /* ===== NK Bot chat widget ===== */
+    .nk-bot{position:fixed;bottom:26px;right:26px;width:60px;height:60px;border-radius:20px;background:linear-gradient(135deg,#ffb347,#ff7b00);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:999;box-shadow:0 8px 22px rgba(255,123,0,0.4);animation:nkFloat 3s ease-in-out infinite;}
+    @keyframes nkFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+    .nk-face{width:34px;height:28px;position:relative;}
+    .nk-eye{position:absolute;top:3px;width:7px;height:9px;background:#1c1c1c;border-radius:50%;animation:nkBlink 4.5s infinite;}
+    .nk-eye.l{left:4px}.nk-eye.r{right:4px}
+    @keyframes nkBlink{0%,92%,100%{height:9px}95%{height:1.5px}}
+    .nk-mouth{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:16px;height:8px;border-bottom:3px solid #1c1c1c;border-radius:0 0 16px 16px;}
+    .nk-chat{position:fixed;bottom:98px;right:26px;width:300px;max-height:400px;background:#1c1c1c;border-radius:16px;box-shadow:0 20px 44px rgba(0,0,0,0.5);display:none;flex-direction:column;overflow:hidden;z-index:1000;}
+    .nk-chat.open{display:flex;}
+    .nk-chat-h{background:linear-gradient(135deg,#ff7b00,#ffb347);padding:12px 14px;display:flex;align-items:center;gap:8px;}
+    .nk-chat-h span{color:#1c1c1c;font-weight:700;font-size:14px;}
+    .nk-chat-x{margin-left:auto;background:none;border:none;font-size:16px;cursor:pointer;color:#1c1c1c;}
+    .nk-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:#141414;}
+    .nk-msg{max-width:82%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4;}
+    .nk-msg.bot{background:#2a2a2a;color:#eee;align-self:flex-start;}
+    .nk-msg.user{background:linear-gradient(135deg,#ff7b00,#ffb347);color:#1c1c1c;align-self:flex-end;font-weight:600;}
+    .nk-foot{display:flex;gap:6px;padding:10px;background:#1c1c1c;border-top:1px solid #333;}
+    .nk-foot input{flex:1;background:#2a2a2a;border:1px solid #444;border-radius:18px;padding:8px 12px;color:#eee;font-size:13px;outline:none;}
+    .nk-foot button{width:34px;height:34px;border-radius:50%;border:none;background:linear-gradient(135deg,#ff7b00,#ffb347);cursor:pointer;}
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">NK's Hub</div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/menu/">Menu</a>
+      <a href="{% url 'my_orders' %}">My Orders</a>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'my_account' %}">👤 {{ user.username }}</a>
+      {% else %}
+        <a href="{% url 'login' %}">Login</a>
+      {% endif %}
+
+      <a href="/about/">About Us</a>
+    </nav>
+    <a href="{% url 'cart' %}" class="cart-indicator">🛒 <span id="cart-count">{{ cart_count }}</span></a>
+  </header>
+
+  <div class="search-strip">
+    <div class="search-row">
+      <a href="{% url 'search_page' %}" class="search-box" style="text-decoration:none; cursor:text;">
+        🔍 <input type="text" id="search-input" placeholder="Search menu items" readonly style="cursor:text;">
+      </a>
+
+      <div class="sortby-wrap">
+        <button type="button" class="sortby-btn" onclick="toggleSortMenu()">
+          <span id="sortLabel">⇅ Sort by</span> <span class="chev">▾</span>
+        </button>
+        <div class="sortby-menu" id="sortMenu">
+          <label><input type="radio" name="sortmode" value="relevance" checked onclick="setSort('relevance')"> Relevance</label>
+          <label><input type="radio" name="sortmode" value="rating" onclick="setSort('rating')"> Rating (High to Low)</label>
+          <label><input type="radio" name="sortmode" value="priceLow" onclick="setSort('priceLow')"> Price: Low to High</label>
+          <label><input type="radio" name="sortmode" value="priceHigh" onclick="setSort('priceHigh')"> Price: High to Low</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-filter-row">
+      <div class="quick-filter-pill" id="filterRated4" onclick="toggleQuickFilter('rated4')">⭐ Rated 4+</div>
+      <div class="quick-filter-pill" id="filterBestseller" onclick="toggleQuickFilter('bestseller')">🔥 Bestseller</div>
+    </div>
+  </div>
+
+  <div class="category-strip-wrap">
+    <div class="category-strip-title">What's on your mind?</div>
+    <div class="category-strip">
+      <div class="cat-circle active" data-category="all">
+        <div class="circle-img"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=120&h=120&fit=crop" alt="All"></div>
+        <span class="label">All</span>
+      </div>
+      <div class="cat-circle" data-category="burger">
+        <div class="circle-img"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=120&h=120&fit=crop" alt="Burgers"></div>
+        <span class="label">Burgers</span>
+      </div>
+      <div class="cat-circle" data-category="pizza">
+        <div class="circle-img"><img src="{% static 'food/images/pizza.jpg' %}" alt="Pizza"></div>
+        <span class="label">Pizza</span>
+      </div>
+      <div class="cat-circle" data-category="chinese">
+        <div class="circle-img"><img src="https://images.unsplash.com/photo-1585032226651-759b368d7246?w=120&h=120&fit=crop" alt="Chinese"></div>
+        <span class="label">Chinese</span>
+      </div>
+      <div class="cat-circle" data-category="drink">
+        <div class="circle-img"><img src="https://images.unsplash.com/photo-1544145945-f90425340c7e?w=120&h=120&fit=crop" alt="Drinks"></div>
+        <span class="label">Drinks</span>
+      </div>
+
+      <div class="cat-circle" data-category="desserts">
+        <div class="circle-img"><img src="https://www.recipetineats.com/tachyon/2025/09/Panna-cotta_8-close-up.jpg?resize=747%2C747" alt="Desserts"></div>
+        <span class="label">Desserts</span>
+      </div>
+      <div class="cat-circle" data-category="hot-drinks">
+        <div class="circle-img"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUPmiecKRqdjLKTTQp1c5_EOeczPSaSFyuHgN7KZ_7uQ&s=10" alt="Hot Drinks"></div>
+        <span class="label">Hot Drinks</span>
+      </div>
+
+      <div class="cat-circle" data-category="cake">
+        <div class="circle-img"><img src="https://food.fnr.sndimg.com/content/dam/images/food/fullset/2009/4/5/1/IG1C17_30946_s4x3.jpg.rend.hgtvcom.1280.1280.suffix/1433541424559.webp" alt="Cake"></div>
+        <span class="label">Cake</span>
+      </div>
+
+      <div class="cat-circle" data-category="icecream">
+        <div class="circle-img"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-CU7qcsT-Xak_ZqfRGWHn3r36w4WDabNixYziwdidwA&s=10" alt="Sandwich"></div>
+        <span class="label">Ice-Cream</span>
+      </div>
+
+    </div>
+    <div class="pref-strip">
+      <div class="pref-pill" data-pref="veg">🟢 Veg</div>
+      <div class="pref-pill" data-pref="nonveg">🔴 Non-Veg</div>
+      <div class="pref-pill" data-pref="spicy">🌶️ Spicy</div>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <div class="banner">
+      <h1>Hungry? We've got you 🍔</h1>
+      <p>Fresh, hot & delivered fast — order your favorite now.</p>
+    </div>
+
+    {% if popular_items %}
+    <div id="popular-section">
+      <div class="section-title">🔥 Popular Right Now</div>
+      <div class="card-grid" id="card-grid">
+        {% for item in popular_items %}
+          <a href="{% url 'food_detail' item.id %}" class="food-card" data-category="{{ item.category }}" data-pref="{% for p in item.preferences.all %}{{ p.slug }} {% endfor %}" data-rating="{{ item.rating }}" data-popular="{% if item.is_popular %}1{% else %}0{% endif %}" data-price="{% if item.discount %}{{ item.discounted_price }}{% else %}{{ item.price }}{% endif %}">
+            <div class="card-image-wrap">
+              {% if item.image %}<img class="dish-img" src="{{ item.image.url }}" alt="{{ item.name }}">{% endif %}
+              {% if item.discount %}<div class="discount-badge">{{ item.discount }}% OFF</div>{% endif %}
+              {% if item.rating %}<div class="rating-badge">⭐ {{ item.rating }}</div>{% endif %}
+              <div class="pref-dot {% if item.is_nonveg %}nonveg{% else %}veg{% endif %}"><span class="inner-dot"></span></div>
+            </div>
+            <div class="card-body">
+              <h3 class="item-name">{{ item.name }}</h3>
+              <p class="tagline">{{ item.description }}</p>
+              <div class="bottom-row">
+                <div class="price-box">
+                  {% if item.discount %}
+                    <span class="old-price">₹{{ item.price }}</span>
+                    <span class="price">₹{{ item.discounted_price }}</span>
+                  {% else %}
+                    <span class="price">₹{{ item.price }}</span>
+                  {% endif %}
+                  <span class="views-badge">👁️ {{ item.views|format_views }} views</span>
+                </div>
+                <button type="button" class="btn-cart" onclick="event.preventDefault(); event.stopPropagation(); addToCartAjax({{ item.id }}, this);">Add to Cart</button>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="section-title">All Menu Items</div>
+    <div class="card-grid" id="all-menu-grid">
+      {% for item in items %}
+        <a href="{% url 'food_detail' item.id %}" class="food-card" data-category="{{ item.category }}" data-pref="{% for p in item.preferences.all %}{{ p.slug }} {% endfor %}" data-rating="{{ item.rating }}" data-popular="{% if item.is_popular %}1{% else %}0{% endif %}" data-price="{% if item.discount %}{{ item.discounted_price }}{% else %}{{ item.price }}{% endif %}">
+          <div class="card-image-wrap">
+            {% if item.image %}<img class="dish-img" src="{{ item.image.url }}" alt="{{ item.name }}">{% endif %}
+            {% if item.discount %}<div class="discount-badge">{{ item.discount }}% OFF</div>{% endif %}
+            {% if item.rating %}<div class="rating-badge">⭐ {{ item.rating }}</div>{% endif %}
+            <div class="pref-dot {% if item.is_nonveg %}nonveg{% else %}veg{% endif %}"><span class="inner-dot"></span></div>
+          </div>
+          <div class="card-body">
+            <h3 class="item-name">{{ item.name }}</h3>
+            <p class="tagline">{{ item.description }}</p>
+            <div class="bottom-row">
+              <div class="price-box">
+                {% if item.discount %}
+                  <span class="old-price">₹{{ item.price }}</span>
+                  <span class="price">₹{{ item.discounted_price }}</span>
+                {% else %}
+                  <span class="price">₹{{ item.price }}</span>
+                {% endif %}
+                <span class="views-badge">👁️ {{ item.views|format_views }} views</span>
+              </div>
+              <button type="button" class="btn-cart" onclick="event.preventDefault(); event.stopPropagation(); addToCartAjax({{ item.id }}, this);">Add to Cart</button>
+            </div>
+          </div>
+        </a>
+      {% empty %}
+        <p style="color:#666;">No items added yet.</p>
+      {% endfor %}
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-col">
+        <h4>About</h4>
+        <a href="/about/">About NK's Hub</a>
+        <a href="/menu/">Our Menu</a>
+        <a href="{% url 'my_orders' %}">My Orders</a>
+        
+      </div>
+
+      <div class="footer-col" id="help">
+        <h4>Help</h4>
+        <a href="{% url 'help' %}">FAQ</a>
+        <a href="/about/">Payments</a>
+        <a href="{% url 'my_orders' %}">Track Order</a>
+        <a href="{% url 'cart' %}">Cancellation & Returns</a>
+        <a href="mailto:nachiketdhakad@gmail.com">Contact Us</a>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Mail us: <a href="mailto:nachiketdhakad@gmail.com">nachiketdhakad@gmail.com</a></p>
+        <p>Registered Office:<br>Khedawda, Ujjain,<br>Madhya Pradesh, India</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>NK's Hub — Indore © 2026</p>
+      <p class="footer-credit">Designed by <strong>Nachiket Dhakad</strong></p>
+    </div>
+  </footer>
+
+  <div class="added-bar" id="added-bar">
+    <span id="added-bar-text">Item added</span>
+    <a href="{% url 'cart' %}">VIEW CART</a>
+  </div>
+
+  <div class="toast" id="error-toast"></div>
+
+  <div class="nk-bot" onclick="document.getElementById('nkChat').classList.toggle('open')">
+    <div class="nk-face"><div class="nk-eye l"></div><div class="nk-eye r"></div><div class="nk-mouth"></div></div>
+  </div>
+  <div class="nk-chat" id="nkChat">
+    <div class="nk-chat-h"><span>🍔 NK Bot</span><button class="nk-chat-x" onclick="document.getElementById('nkChat').classList.remove('open')">✕</button></div>
+    <div class="nk-body" id="nkBody"><div class="nk-msg bot">Hii! Menu, order ya delivery ke baare mein pucho 😊</div></div>
+    <div class="nk-foot"><input id="nkIn" placeholder="Type..."><button onclick="nkSend()">➤</button></div>
+  </div>
+
+<script>
+
+    const catCircles = document.querySelectorAll('.cat-circle');
+    const prefPills = document.querySelectorAll('.pref-pill');
+    const popularSection = document.getElementById('popular-section');
+    let activeCategory = 'all';
+    let activePref = null;
+    let sortMode = 'relevance';
+    let quickFilters = { rated4: false, bestseller: false };
+
+    catCircles.forEach(item => {
+      item.addEventListener('click', () => {
+        catCircles.forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+        activeCategory = item.dataset.category;
+        filterCards();
+      });
+    });
+
+    prefPills.forEach(item => {
+      item.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        prefPills.forEach(el => el.classList.remove('active'));
+        if (!isActive) { item.classList.add('active'); activePref = item.dataset.pref; }
+        else { activePref = null; }
+        filterCards();
+      });
+    });
+
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('input', filterCards);
+
+    function toggleSortMenu() {
+      document.getElementById('sortMenu').classList.toggle('open');
+    }
+    document.addEventListener('click', (e) => {
+      const wrap = document.querySelector('.sortby-wrap');
+      const menu = document.getElementById('sortMenu');
+      if (wrap && menu && !wrap.contains(e.target)) {
+        menu.classList.remove('open');
+      }
+    });
+    function setSort(mode) {
+      sortMode = mode;
+      const labels = { relevance:'⇅ Sort by', rating:'⭐ Rating: High to Low', priceLow:'↑ Price: Low to High', priceHigh:'↓ Price: High to Low' };
+      document.getElementById('sortLabel').textContent = labels[mode];
+      document.getElementById('sortMenu').classList.remove('open');
+      filterCards();
+    }
+
+    function toggleQuickFilter(key) {
+      quickFilters[key] = !quickFilters[key];
+      const elId = key === 'rated4' ? 'filterRated4' : 'filterBestseller';
+      document.getElementById(elId).classList.toggle('active', quickFilters[key]);
+      filterCards();
+    }
+
+    // Naam ke har word ka pehla letter jodo — "Veg Cheese Burger" -> "vcb"
+    function getInitials(str) {
+      return str.trim().split(/\s+/).map(w => w[0] || '').join('').toLowerCase();
+    }
+
+    function filterCards() {
+      const query = searchInput.value.trim().toLowerCase();
+
+      function applyFilter(gridId, checkName, hidePopularWhenAll) {
+        const grid = document.getElementById(gridId);
+        if (!grid) return 0;
+        const cards = Array.from(grid.querySelectorAll('.food-card'));
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+          const catMatch = activeCategory === 'all' || card.dataset.category === activeCategory;
+          const prefList = (card.dataset.pref || '').trim().split(/\s+/);
+          const prefMatch = !activePref || prefList.includes(activePref);
+          let nameMatch = true;
+          if (checkName && query) {
+            const nameEl = card.querySelector('.item-name');
+            const nameText = nameEl ? nameEl.textContent.toLowerCase() : '';
+            const initials = nameEl ? getInitials(nameEl.textContent) : '';
+            nameMatch = nameText.includes(query) || initials.startsWith(query);
+          }
+          const rating = parseFloat(card.dataset.rating || '0');
+          const ratedMatch = !quickFilters.rated4 || rating >= 4;
+          const bestsellerMatch = !quickFilters.bestseller || card.dataset.popular === '1';
+          // "All" category me Popular items All-grid se hide honge (Popular section me already dikh rahe hain).
+          // Kisi specific category select karne pe wahi popular item apni category ke All-grid me bhi dikhega.
+          const popularHideMatch = !hidePopularWhenAll || !(activeCategory === 'all' && card.dataset.popular === '1');
+
+          const visible = catMatch && prefMatch && nameMatch && ratedMatch && bestsellerMatch && popularHideMatch;
+          card.style.display = visible ? 'block' : 'none';
+          if (visible) visibleCount++;
+        });
+
+        let sorted = cards.slice();
+        if (sortMode === 'rating') {
+          sorted.sort((a, b) => parseFloat(b.dataset.rating || 0) - parseFloat(a.dataset.rating || 0));
+        } else if (sortMode === 'priceLow') {
+          sorted.sort((a, b) => parseFloat(a.dataset.price || 0) - parseFloat(b.dataset.price || 0));
+        } else if (sortMode === 'priceHigh') {
+          sorted.sort((a, b) => parseFloat(b.dataset.price || 0) - parseFloat(a.dataset.price || 0));
+        }
+        sorted.forEach(card => grid.appendChild(card));
+
+        return visibleCount;
+      }
+
+      if (popularSection) {
+        const popularVisible = applyFilter('card-grid', false, false);
+        popularSection.style.display = popularVisible > 0 ? '' : 'none';
+      }
+
+      const visibleCount = applyFilter('all-menu-grid', true, true);
+
+      let noResultsEl = document.getElementById('no-results');
+      if (visibleCount === 0) {
+        if (!noResultsEl) {
+          noResultsEl = document.createElement('div');
+          noResultsEl.id = 'no-results';
+          noResultsEl.className = 'no-results';
+          noResultsEl.textContent = 'No items match your search/filter.';
+          document.getElementById('all-menu-grid').appendChild(noResultsEl);
+        }
+      } else if (noResultsEl) { noResultsEl.remove(); }
+    }
+
+    // Page load pe ek baar chalao taaki default "All" category me Popular items All-grid se turant hide ho jayein
+    filterCards();
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function showToast(message) {
+      const toast = document.getElementById('error-toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+
+    function addToCartAjax(pk, btn) {
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = 'Adding...';
+
+      fetch('/cart/add/' + pk + '/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrftoken,
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'quantity=1',
+      })
+        .then(res => {
+          return res.text().then(text => {
+            let data;
+            try { data = JSON.parse(text); }
+            catch (e) {
+              console.error('Server did not return JSON. Raw response:', text);
+              throw new Error('Server error (not JSON) — check Django console for the traceback.');
+            }
+            if (!res.ok) {
+              console.error('Server responded with status', res.status, data);
+              throw new Error(data.error || ('Server error ' + res.status));
+            }
+            return data;
+          });
+        })
+        .then(data => {
+          if (data.success) {
+            document.getElementById('cart-count').textContent = data.cart_count;
+            document.getElementById('added-bar-text').textContent = data.item_name + ' added to cart';
+            document.getElementById('added-bar').style.display = 'flex';
+          } else {
+            showToast(data.error || 'Could not add to cart.');
+          }
+        })
+        .catch(err => {
+          console.error('Add to cart failed:', err);
+          showToast(err.message || 'Could not add to cart. Please try again.');
+        })
+        .finally(() => { btn.disabled = false; btn.textContent = originalText; });
+    }
+
+        function nkBotReply(msg){
+      const m = msg.toLowerCase();
+
+      if (/^(hi|hii+|hello+|hey+|namaste|namaskar)\b/.test(m)) {
+        const greetings = [
+          "Namaste! Kaise madad kar sakta hoon aapki? 😊",
+          "Hii! Kya khaane ka mann hai aaj? 🍽️",
+          "Hello! Bhookh lagi hai kya? Neeche menu se choose kar lo 😋"
+        ];
+        return greetings[Math.floor(Math.random() * greetings.length)];
+      }
+      if (m.includes('menu')) return "Yahi menu page hai — category circles se filter karo ya upar search se dhundo 🍕";
+      if (m.includes('order')) return "Item pe 'Add to Cart' dabao, phir Checkout pe jaake order place karo 🛒";
+      if (m.includes('cancel')) return "Order cancel karne ke liye My Orders → order kholo → Cancel Order dabao (sirf 'Placed' status mein) ❌";
+      if (m.includes('track') || m.includes('status')) return "Order status My Orders page pe dikh jayega — Placed, On the Way, ya Delivered 📦";
+      if (m.includes('delivery') || m.includes('kitna time') || m.includes('kab')) return "Delivery usually 30-45 min mein ho jati hai, area ke hisaab se 🚴";
+      if (m.includes('area') || m.includes('pincode') || m.includes('deliver kar')) return "Hum Vijay Nagar, Palasia, Sudama Nagar, Rajendra Nagar aur Malviya Nagar mein deliver karte hain 📍";
+      if (m.includes('price') || m.includes('cost') || m.includes('rate') || m.includes('kitna')) return "Har item ka price card pe hi dikh raha hai, discount bhi wahin milega 💰";
+      if (m.includes('coupon') || m.includes('discount') || m.includes('offer')) return "Checkout page pe 'Apply Coupon' try karo — SAVE10 ya FLAT20 use kar sakte ho 🏷️";
+      if (m.includes('payment') || m.includes('upi') || m.includes('cod') || m.includes('cash')) return "UPI, Card, aur Cash on Delivery (₹1000 tak) — teeno options checkout pe available hain 💳";
+      if (m.includes('favourite') || m.includes('favorite') || m.includes('wishlist')) return "Kisi bhi dish pe heart ❤️ dabao Favourites mein save karne ke liye — My Account → Favourites mein dekho";
+      if (m.includes('address')) return "My Account → Addresses mein jaake naya address add ya change kar sakte ho 🏠";
+      if (m.includes('contact') || m.includes('complain') || m.includes('problem') || m.includes('issue')) return "Koi dikkat ho to nachiketdhakad@gmail.com pe mail kar do, ya Contact Us page use karo 📧";
+      if (m.includes('help')) return "Detailed help ke liye /help/ page check karo — wahan saare FAQs hain 🙋";
+      if (m.includes('thank')) return "Aapka swagat hai! Khaana enjoy karo 🍽️";
+      if (m.includes('bye')) return "Bye! Phir milenge, khana enjoy karo 👋";
+      if (m.includes('ok') || m.includes('ohk') || m.includes('okiee')) return "Hmm, aur kuch help chahiye aapko? 🙂";
+      if (m.includes('nachiket')) return "Ha bhai bol, main Nachiket Dhakad ka bot hoon 😄";
+      if (m.includes('chutiya')) return "abhe oye khajur ja na du ky  😄";
+
+      const fallbacks = [
+        "Hmm, thoda aur bata sakte ho? Menu, order, delivery ya payment ke baare mein pucho 🙂",
+        "Iska jawab mere paas abhi nahi hai — /help/ page pe zyada info milegi",
+        "Samajh nahi paya thoda, category circles se dish dhundh sakte ho 📋",
+        "Ye specific sawaal ke liye Contact Us pe mail kar do, jaldi reply milega 📧"
+      ];
+      return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    }
+
+    function nkSend(){
+      const inp=document.getElementById('nkIn'), body=document.getElementById('nkBody');
+      const t=inp.value.trim(); if(!t) return;
+      body.innerHTML+=`<div class="nk-msg user">${t}</div>`; inp.value='';
+      body.scrollTop=body.scrollHeight;
+      setTimeout(()=>{
+        const r = nkBotReply(t);
+        body.innerHTML+=`<div class="nk-msg bot">${r}</div>`;
+        body.scrollTop=body.scrollHeight;
+      }, 500 + Math.random()*300);
+    }
+    document.getElementById('nkIn').addEventListener('keydown',e=>{if(e.key==='Enter')nkSend();});
+  </script>
+</body>
+</html>

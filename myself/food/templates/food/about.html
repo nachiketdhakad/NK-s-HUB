@@ -1,0 +1,337 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>About Us - NK's Hub</title>
+  <link rel="stylesheet" href="{% static 'food/style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #fdf6ef;
+      color: #2b2b2b;
+    }
+
+    /* ===== NAVBAR (menu.html jaisa) ===== */
+    header.navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #1c1c1c;
+      padding: 16px 60px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.18);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    header.navbar .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #ffb347;
+      text-decoration: none;
+    }
+    header.navbar nav a {
+      color: #e8e8e8;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: 500;
+      font-size: 14.5px;
+      transition: 0.25s;
+    }
+    header.navbar nav a:hover { color: #ffb347; }
+
+    /* ===== TOP STATS STRIP (Swiggy jaisa) ===== */
+    .stats-strip {
+      background: #1c1c1c;
+      padding: 40px 60px 50px;
+      text-align: center;
+    }
+    .stats-eyebrow {
+      color: #ffb347; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px;
+    }
+    .stats-heading {
+      font-family: 'Playfair Display', serif; color: #fff; font-size: 34px; margin: 0 0 40px;
+    }
+    .stats-grid {
+      display: flex; justify-content: center; gap: 60px; flex-wrap: wrap; max-width: 1000px; margin: 0 auto;
+    }
+    .stat-item .num { color: #ff7b00; font-size: 32px; font-weight: 700; font-family: 'Playfair Display', serif; }
+    .stat-item .label { color: #ccc; font-size: 13px; margin-top: 4px; }
+
+    .page-wrap { max-width: 1100px; margin: 0 auto; padding: 70px 60px; }
+
+    /* ===== ABOUT US block ===== */
+    .about-block { margin-bottom: 80px; }
+    .section-eyebrow {
+      color: #ff7b00; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; font-weight: 700; margin-bottom: 10px;
+    }
+    .section-heading {
+      font-family: 'Playfair Display', serif; font-size: 32px; margin: 0 0 20px; color: #1c1c1c;
+    }
+    .about-block p { font-size: 15.5px; line-height: 1.9; color: #555; max-width: 720px; }
+
+    /* ===== ABOUT ME block (photo + bio) ===== */
+    .about-me {
+      display: flex; align-items: center; gap: 50px; margin-bottom: 90px; flex-wrap: wrap;
+    }
+    .about-me-photo {
+      flex: 0 0 260px;
+      width: 260px; height: 260px; border-radius: 50%;
+      overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+      border: 6px solid #fff;
+    }
+    .about-me-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .about-me-text { flex: 1; min-width: 280px; }
+    .about-me-text h3 {
+      font-family: 'Playfair Display', serif; font-size: 26px; margin: 0 0 6px; color: #1c1c1c;
+    }
+    .about-me-text .role { color: #ff7b00; font-weight: 600; font-size: 13.5px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 18px; }
+    .about-me-text p { font-size: 15px; line-height: 1.85; color: #555; margin-bottom: 24px; }
+
+    .social-row { display: flex; gap: 14px; }
+    .social-btn {
+      width: 46px; height: 46px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      text-decoration: none; font-size: 19px; color: #1c1c1c;
+      transition: 0.25s;
+    }
+    .social-btn:hover { transform: translateY(-4px); box-shadow: 0 10px 22px rgba(0,0,0,0.22); }
+    .social-btn.instagram { background: linear-gradient(135deg,#f58529,#feda75,#dd2a7b,#8134af,#515bd4); color:#fff; font-size: 21px; }
+    .social-btn.facebook { background: #1877f2; color: #fff; font-size: 21px; }
+    .social-btn.linkedin { background: #0a66c2; color: #fff; font-size: 21px; }
+
+    /* ===== OUTLETS MAP (Swiggy-style decorative map) ===== */
+    .outlets-block { margin-bottom: 40px; }
+    .outlets-block .section-heading { text-align: center; }
+    .outlets-block .section-eyebrow { text-align: center; }
+    .outlets-block > p.sub {
+      text-align: center; color: #888; font-size: 14.5px; max-width: 520px; margin: 0 auto 50px;
+    }
+
+    .map-visual {
+      position: relative;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255,123,0,0.06) 0, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(255,123,0,0.06) 0, transparent 40%),
+        repeating-linear-gradient(0deg, #f1e6d8 0 1px, transparent 1px 46px),
+        repeating-linear-gradient(90deg, #f1e6d8 0 1px, transparent 1px 46px),
+        #fbf3e9;
+      border-radius: 28px;
+      min-height: 420px;
+      padding: 60px 40px;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .map-visual::before {
+      content: '';
+      position: absolute; inset: 0;
+      border: 1px solid rgba(201,140,39,0.15);
+      border-radius: 28px;
+      pointer-events: none;
+    }
+
+    /* center badge pulses in first */
+    .map-center-badge {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) scale(0);
+      width: 70px; height: 70px; border-radius: 50%;
+      background: linear-gradient(135deg, #ff7b00, #ff4500);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 10px 26px rgba(255,90,0,0.4);
+      font-family: 'Playfair Display', serif; color: #fff; font-weight: 700; font-size: 18px;
+      z-index: 2;
+      animation: badgePop 0.5s ease forwards;
+      animation-delay: 0.1s;
+    }
+    @keyframes badgePop {
+      to { transform: translate(-50%,-50%) scale(1); }
+    }
+
+    .outlet-pins {
+      position: relative; width: 100%; max-width: 780px; height: 340px;
+      display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; justify-items: center;
+      gap: 20px;
+    }
+
+    /* ===== OUTLET PIN — hidden by default, animated in one by one via JS-added class ===== */
+    .outlet-pin {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      text-decoration: none; color: inherit;
+      opacity: 0;
+      transform: translateY(26px) scale(0.85);
+      transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .outlet-pin.pin-show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .pin-circle {
+      width: 78px; height: 78px; border-radius: 50%; background: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 26px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.12); border: 3px solid #fff;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+    }
+    .outlet-pin:hover .pin-circle { transform: translateY(-6px); box-shadow: 0 16px 30px rgba(255,123,0,0.3); }
+
+    /* ping ripple effect once pin lands */
+    .pin-circle::after {
+      content: '';
+      position: absolute; inset: -8px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,123,0,0.45);
+      opacity: 0;
+    }
+    .outlet-pin.pin-show .pin-circle::after {
+      animation: pinRipple 0.9s ease-out;
+      animation-delay: 0.1s;
+    }
+    @keyframes pinRipple {
+      0%   { opacity: 0.9; transform: scale(0.6); }
+      100% { opacity: 0;   transform: scale(1.6); }
+    }
+
+    .pin-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #ff7b00; margin-top: -4px;
+      box-shadow: 0 0 0 4px rgba(255,123,0,0.18);
+    }
+    .pin-label { font-weight: 700; font-size: 14px; color: #1c1c1c; text-align: center; }
+    .pin-address { font-size: 11.5px; color: #999; text-align: center; max-width: 130px; line-height: 1.4; }
+
+    .no-outlets { text-align: center; color: #999; padding: 40px; }
+
+    footer.simple-footer {
+      text-align: center; color: #999; padding: 30px; font-size: 13px; background: #1c1c1c;
+    }
+
+    @media (max-width: 760px) {
+      .outlet-pins { grid-template-columns: repeat(2, 1fr); height: auto; }
+      .map-center-badge { position: static; transform: none; margin-bottom: 20px; }
+      .map-visual { flex-direction: column; }
+      .about-me { flex-direction: column; text-align: center; }
+      .social-row { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="/" class="logo">NK's Hub</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about/">About Us</a>
+      <a href="{% url 'sustainability' %}">Sustainability</a>
+      <a href="{% url 'contact' %}">Contact</a>
+    </nav>
+  </header>
+
+  <div class="stats-strip">
+    <div class="stats-eyebrow">Est. Indore</div>
+    <div class="stats-heading">Serving the city, one order at a time</div>
+    <div class="stats-grid">
+      <div class="stat-item"><div class="num">{{ outlets|length }}</div><div class="label">Active Outlets</div></div>
+      <div class="stat-item"><div class="num">5+</div><div class="label">Delivery Zones</div></div>
+      <div class="stat-item"><div class="num">100%</div><div class="label">Fresh & Made to Order</div></div>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+
+    <div class="about-block">
+      <div class="section-eyebrow">Our Story</div>
+      <h2 class="section-heading">About Us</h2>
+      <p>Thank you for visiting NK's Hub — we serve delicious food made with love. What started as a small idea has grown into a favourite food stop across Indore, crafting burgers, wood-fired pizzas and slow-simmered momos fresh for every order.</p>
+    </div>
+
+    <div class="about-me">
+      <div class="about-me-photo">
+        <!-- 👇 apni photo is naam se food/static/food/images/ folder me daal dena -->
+        <img src="{% static 'food/images/nachiket.jpg' %}" alt="Nachiket Dhakad">
+      </div>
+      <div class="about-me-text">
+        <div class="section-eyebrow">The Person Behind It</div>
+        <h3>Nachiket Dhakad</h3>
+        <div class="role">Founder & Developer, NK's Hub</div>
+        <p>
+          Hi, I'm Nachiket — the person behind NK's Hub. I built this platform from the ground up
+          to bring fresh, fast, and honestly-made food to Indore. When I'm not in the kitchen or
+          writing code, I'm probably thinking about the next dish to add to the menu.
+        </p>
+        <!-- 👇 in teeno links me apna real username/profile URL daal dena, redirect already working hai -->
+        <div class="social-row">
+          <a href="https://www.instagram.com/nachiket___11?igsi=c3Q2ajZuODZ3aGQ2" target="_blank" rel="noopener" class="social-btn instagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://www.facebook.com/share/1EGYF9wffe/" target="_blank" rel="noopener" class="social-btn facebook" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="https://www.linkedin.com/in/nachiket-dhakad-7389a6423?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener" class="social-btn linkedin" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="outlets-block">
+      <div class="section-eyebrow">Where We Deliver From</div>
+      <h2 class="section-heading">Our Outlets</h2>
+      <p class="sub">All active outlets that power delivery across Indore — orders are automatically routed to whichever is closest to you.</p>
+
+      <div class="map-visual">
+        {% if outlets %}
+        
+          <div class="outlet-pins" id="outletPins">
+            {% for outlet in outlets %}
+              <div class="outlet-pin">
+                <div class="pin-circle">🍔</div>
+                <div class="pin-dot"></div>
+                <div class="pin-label">{{ outlet.name }}</div>
+                <div class="pin-address">{{ outlet.address }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="no-outlets">No outlets added yet — add some from the admin panel.</div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="simple-footer">© 2026 NK's Hub — Indore | Designed by Nachiket Dhakad</footer>
+
+  <script>
+    // Outlets ek-ek karke (staggered) map pe animate ho ke aate hain
+    document.addEventListener('DOMContentLoaded', function () {
+      const pinsContainer = document.getElementById('outletPins');
+      if (!pinsContainer) return;
+
+      const pins = pinsContainer.querySelectorAll('.outlet-pin');
+
+      function revealPins() {
+        pins.forEach(function (pin, index) {
+          setTimeout(function () {
+            pin.classList.add('pin-show');
+          }, 400 + index * 350); // har outlet 350ms delay se aayega
+        });
+      }
+
+      // Jab map screen pe visible ho tabhi animation start ho (scroll into view)
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(function (entries, obs) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              revealPins();
+              obs.disconnect();
+            }
+          });
+        }, { threshold: 0.3 });
+        observer.observe(pinsContainer);
+      } else {
+        revealPins();
+      }
+    });
+  </script>
+
+</body>
+</html>

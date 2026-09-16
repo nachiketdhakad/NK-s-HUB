@@ -1,0 +1,132 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact Us - NK's Hub</title>
+  <link rel="stylesheet" href="{% static 'food/style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Poppins', sans-serif; background: #fdf6ef; color: #2b2b2b; }
+
+    header.navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      background-color: #1c1c1c; padding: 16px 60px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.18); flex-wrap: wrap; gap: 10px;
+    }
+    header.navbar .logo { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: #ffb347; text-decoration: none; }
+    header.navbar nav a { color: #e8e8e8; text-decoration: none; margin: 0 15px; font-weight: 500; font-size: 14.5px; transition: 0.25s; }
+    header.navbar nav a:hover { color: #ffb347; }
+
+    .page-wrap { max-width: 1000px; margin: 0 auto; padding: 80px 60px; }
+
+    .contact-grid { display: flex; gap: 60px; flex-wrap: wrap; }
+    .contact-info { flex: 1; min-width: 260px; }
+    .contact-info .eyebrow { color: #ff7b00; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
+    .contact-info h1 { font-family: 'Playfair Display', serif; font-size: 34px; margin: 0 0 18px; }
+    .contact-info p { color: #666; font-size: 14.5px; line-height: 1.8; margin-bottom: 30px; }
+
+    .info-line { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; color: #444; font-size: 14.5px; }
+    .info-line .ic { width: 38px; height: 38px; border-radius: 50%; background: #fdf3e7; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
+    .social-row { display: flex; gap: 14px; margin-top: 26px; }
+    .social-btn {
+      width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      background: #fdf3e7; text-decoration: none; font-size: 18px; color: #1c1c1c; transition: 0.25s;
+    }
+    .social-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.2); }
+    .social-btn.instagram { background: linear-gradient(135deg,#f58529,#feda75,#dd2a7b,#8134af,#515bd4); color:#fff; font-size: 19px; }
+    .social-btn.facebook { background: #1877f2; color: #fff; font-size: 19px; }
+    .social-btn.linkedin { background: #0a66c2; color: #fff; font-size: 19px; }
+
+    .contact-form {
+      flex: 1; min-width: 300px; background: #fff; border-radius: 20px; padding: 34px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.07);
+    }
+    .contact-form h2 { font-family: 'Playfair Display', serif; font-size: 22px; margin: 0 0 22px; }
+    .contact-form input, .contact-form textarea {
+      width: 100%; padding: 14px 16px; margin-bottom: 16px; border: 1px solid #eee;
+      border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 14px; background: #fdf6ef;
+      outline: none; transition: border 0.2s ease;
+    }
+    .contact-form input:focus, .contact-form textarea:focus { border-color: #ff7b00; }
+    .contact-form textarea { resize: vertical; min-height: 120px; }
+    .contact-form button {
+      background: linear-gradient(135deg, #ff7b00, #ff4500); color: #fff; border: none;
+      padding: 14px 30px; border-radius: 30px; font-weight: 600; font-size: 14.5px;
+      cursor: pointer; transition: 0.25s;
+    }
+    .contact-form button:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(255,90,0,0.35); }
+
+    .success-msg {
+      background: #e9f9ee; color: #1e8a4c; padding: 14px 18px; border-radius: 12px;
+      font-size: 14px; margin-bottom: 18px;
+    }
+
+    footer.simple-footer { text-align: center; color: #999; padding: 30px; font-size: 13px; background: #1c1c1c; }
+
+    @media (max-width: 760px) {
+      .contact-grid { flex-direction: column; }
+      .page-wrap { padding: 60px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="/" class="logo">NK's Hub</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about/">About Us</a>
+      <a href="{% url 'sustainability' %}">Sustainability</a>
+   
+    </nav>
+  </header>
+
+  <div class="page-wrap">
+    <div class="contact-grid">
+
+      <div class="contact-info">
+        <div class="eyebrow">Get In Touch</div>
+        <h1>Contact Us</h1>
+        <p>Koi sawaal, feedback ya order se juda issue hai? Neeche form fill karo ya humein directly reach out karo — hum jald hi reply karenge.</p>
+
+        <div class="info-line"><span class="ic">✉️</span> support@nkshub.in</div>
+        <div class="info-line"><span class="ic">📍</span> Indore, Madhya Pradesh</div>
+
+        <!-- 👇 apna real profile URL daal dena -->
+        <div class="social-row">
+          <a href="https://www.instagram.com/nachiket___11?igsi=c3Q2ajZuODZ3aGQ2" target="_blank" rel="noopener" class="social-btn instagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://www.facebook.com/share/1EGYF9wffe/" target="_blank" rel="noopener" class="social-btn facebook" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="https://www.linkedin.com/in/nachiket-dhakad-7389a6423?utm_source=share_via&utm_content=profile&utm_medium=member" target="_blank" rel="noopener" class="social-btn linkedin" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+
+      <div class="contact-form">
+        <h2>Send a Message</h2>
+
+        {% if messages %}
+          {% for message in messages %}
+            <div class="success-msg">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'contact' %}">
+          {% csrf_token %}
+          <input type="text" name="name" placeholder="Enter Name" required>
+          <input type="email" name="email" placeholder="Enter Email Address" required>
+          <textarea name="message" placeholder="Enter Message" required></textarea>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="simple-footer">© 2026 NK's Hub — Indore | Designed by Nachiket Dhakad</footer>
+
+</body>
+</html>

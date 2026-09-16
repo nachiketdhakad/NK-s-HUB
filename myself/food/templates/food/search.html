@@ -1,0 +1,334 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search - NK's Hub</title>
+  <link rel="stylesheet" href="{% static 'food/style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #fdf6ef;
+      min-height: 100vh;
+      color: #2b2b2b;
+    }
+
+    .search-header {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 60px; background: #1c1c1c;
+      position: sticky; top: 0; z-index: 50;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.18);
+    }
+    .back-arrow {
+      color: #fff; font-size: 22px; text-decoration: none; cursor: pointer;
+      display: flex; align-items: center;
+    }
+    .search-input-wrap {
+      flex: 1; display: flex; align-items: center; gap: 10px;
+      background: #fff; border-radius: 14px; padding: 13px 20px;
+      max-width: 640px;
+    }
+    .search-input-wrap input {
+      border: none; outline: none; background: transparent;
+      font-size: 15px; width: 100%; font-family: 'Poppins', sans-serif;
+    }
+    .clear-btn {
+      color: #999; font-size: 20px; cursor: pointer; user-select: none; display: none;
+    }
+
+    .sortby-wrap { position: relative; }
+    .sortby-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: #fff; border: 1.5px solid #eee; border-radius: 20px;
+      padding: 13px 20px; font-size: 13.5px; font-weight: 600; color: #333;
+      cursor: pointer; font-family: 'Poppins', sans-serif; white-space: nowrap;
+    }
+    .sortby-btn:hover { border-color: #ff7b00; }
+    .sortby-menu {
+      display: none; position: absolute; top: calc(100% + 8px); right: 0;
+      background: #fff; border-radius: 14px; box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+      padding: 16px 20px; min-width: 220px; z-index: 60;
+    }
+    .sortby-menu.open { display: block; }
+    .sortby-menu label {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13.5px; font-weight: 500; color: #333;
+      padding: 8px 0; cursor: pointer;
+    }
+    .sortby-menu input[type="radio"] { accent-color: #ff7b00; width: 15px; height: 15px; }
+
+    .search-body { max-width: 1200px; margin: 0 auto; padding: 30px 60px 100px; }
+
+    .hint-text {
+      color: #999; font-size: 14.5px; text-align: center; padding: 60px 20px;
+    }
+
+    .results-count {
+      font-size: 14px; color: #777; margin-bottom: 18px; font-weight: 500;
+    }
+
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
+
+    .food-card {
+      background: #fff; border-radius: 20px; overflow: hidden;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      display: block; text-decoration: none; color: inherit;
+      border: 1px solid #f4ece2;
+    }
+    .food-card:hover { transform: translateY(-8px); box-shadow: 0 20px 36px rgba(0,0,0,0.16); }
+
+    .card-image-wrap { position: relative; }
+    .food-card img.dish-img { width: 100%; height: 170px; object-fit: cover; display: block; background: #f2e9dd; }
+
+    .discount-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: linear-gradient(135deg, #ff4500, #ff7b00); color: #fff;
+      font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 20px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3); letter-spacing: 0.3px;
+    }
+    .rating-badge {
+      position: absolute; top: 12px; right: 12px; background: rgba(20,20,20,0.75); color: #ffd700;
+      font-size: 12px; font-weight: 600; padding: 5px 10px; border-radius: 20px;
+    }
+    .pref-dot {
+      position: absolute; bottom: 12px; left: 12px; width: 19px; height: 19px;
+      border: 2px solid #fff; border-radius: 5px; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .pref-dot.veg { background: #0a8a0a; }
+    .pref-dot.nonveg { background: #b30000; }
+    .pref-dot .inner-dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+
+    .views-badge { font-size: 11px; color: #a2a2a2; margin-top: 4px; }
+    .food-card .card-body { padding: 16px 18px 20px; }
+    .food-card h3 { margin: 0 0 4px; font-size: 16.5px; color: #1c1c1c; font-weight: 700; }
+    .food-card .tagline {
+      font-size: 12.5px; color: #999; margin: 0 0 10px; font-style: italic;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .food-card .bottom-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .price-box { display: flex; flex-direction: column; }
+    .old-price { font-size: 12px; color: #b5b5b5; text-decoration: line-through; }
+    .food-card .price { font-weight: 700; color: #ff7b00; font-size: 16px; }
+
+    .btn-cart {
+      border: none; color: #fff; padding: 9px 18px; border-radius: 22px; font-size: 12.5px;
+      font-weight: 600; cursor: pointer; transition: 0.2s;
+      background: linear-gradient(135deg, #00c853, #00994d);
+      box-shadow: 0 4px 12px rgba(0,153,77,0.3);
+      position: relative; z-index: 5;
+    }
+    .btn-cart:hover { transform: scale(1.06); }
+    .btn-cart:disabled { opacity: 0.7; cursor: default; transform: none; }
+
+    .added-bar {
+      position: fixed; left: 0; right: 0; bottom: 0; background: #00994d; color: #fff;
+      display: none; align-items: center; justify-content: space-between; padding: 16px 30px;
+      font-weight: 600; font-size: 14px; z-index: 100; box-shadow: 0 -4px 18px rgba(0,0,0,0.25);
+    }
+    .added-bar a { color: #fff; font-weight: 700; text-decoration: underline; }
+
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; background: #1c1c1c; color: #fff;
+      padding: 14px 20px; border-radius: 12px; font-size: 13.5px; box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+      z-index: 200; display: none; max-width: 320px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="search-header">
+    <a href="{% url 'menu' %}" class="back-arrow">←</a>
+    <div class="search-input-wrap">
+      🔍 <input type="text" id="search-input" placeholder="Search for dishes..." autofocus>
+      <span class="clear-btn" id="clear-btn" onclick="clearSearch()">✕</span>
+    </div>
+
+    <div class="sortby-wrap">
+      <button type="button" class="sortby-btn" onclick="toggleSortMenu()">
+        <span id="sortLabel">⇅ Sort</span> <span class="chev">▾</span>
+      </button>
+      <div class="sortby-menu" id="sortMenu">
+        <label><input type="radio" name="sortmode" value="relevance" checked onclick="setSort('relevance')"> Relevance</label>
+        <label><input type="radio" name="sortmode" value="rating" onclick="setSort('rating')"> Rating (High to Low)</label>
+        <label><input type="radio" name="sortmode" value="priceLow" onclick="setSort('priceLow')"> Price: Low to High</label>
+        <label><input type="radio" name="sortmode" value="priceHigh" onclick="setSort('priceHigh')"> Price: High to Low</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-body">
+    <div id="results-count" class="results-count" style="display:none;"></div>
+    <div class="card-grid" id="results-grid"></div>
+    <div class="hint-text" id="hint-text">Type a dish name to start searching — even a couple of letters work.</div>
+  </div>
+
+  <div class="added-bar" id="added-bar">
+    <span id="added-bar-text">Item added</span>
+    <a href="{% url 'cart' %}">VIEW CART</a>
+  </div>
+
+  <div class="toast" id="error-toast"></div>
+
+  <script>
+    const searchInput = document.getElementById('search-input');
+    const clearBtn = document.getElementById('clear-btn');
+    const resultsGrid = document.getElementById('results-grid');
+    const resultsCount = document.getElementById('results-count');
+    const hintText = document.getElementById('hint-text');
+
+    let debounceTimer = null;
+    let sortMode = 'relevance';
+
+    function toggleSortMenu(){ document.getElementById('sortMenu').classList.toggle('open'); }
+    document.addEventListener('click', e=>{
+      const wrap=document.querySelector('.sortby-wrap'), menu=document.getElementById('sortMenu');
+      if(wrap && menu && !wrap.contains(e.target)) menu.classList.remove('open');
+    });
+    function setSort(mode){
+      sortMode=mode;
+      const labels={relevance:'⇅ Sort',rating:'⭐ Rating',priceLow:'↑ Price Low',priceHigh:'↓ Price High'};
+      document.getElementById('sortLabel').textContent=labels[mode];
+      document.getElementById('sortMenu').classList.remove('open');
+      if(searchInput.value.trim()) runSearch(searchInput.value.trim());
+    }
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+      clearBtn.style.display = query ? 'block' : 'none';
+
+      clearTimeout(debounceTimer);
+      if (!query) {
+        resultsGrid.innerHTML = '';
+        resultsCount.style.display = 'none';
+        hintText.style.display = 'block';
+        hintText.textContent = 'Type a dish name to start searching — even a couple of letters work.';
+        return;
+      }
+
+      debounceTimer = setTimeout(() => runSearch(query), 300);
+    });
+
+    function clearSearch() {
+      searchInput.value = '';
+      searchInput.dispatchEvent(new Event('input'));
+      searchInput.focus();
+    }
+
+    function runSearch(query) {
+      hintText.style.display = 'none';
+      fetch(`/search-suggest/?q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => renderResults(data.results, query))
+        .catch(() => {
+          resultsGrid.innerHTML = '';
+          hintText.style.display = 'block';
+          hintText.textContent = 'Something went wrong, try again.';
+        });
+    }
+
+    function renderResults(results, query) {
+      if (sortMode === 'rating') results = results.slice().sort((a,b)=>parseFloat(b.rating)-parseFloat(a.rating));
+      else if (sortMode === 'priceLow') results = results.slice().sort((a,b)=>parseFloat(a.discounted_price)-parseFloat(b.discounted_price));
+      else if (sortMode === 'priceHigh') results = results.slice().sort((a,b)=>parseFloat(b.discounted_price)-parseFloat(a.discounted_price));
+
+      if (!results.length) {
+        resultsGrid.innerHTML = '';
+        resultsCount.style.display = 'none';
+        hintText.style.display = 'block';
+        hintText.textContent = `No dishes found for "${query}".`;
+        return;
+      }
+
+      resultsCount.style.display = 'block';
+      resultsCount.textContent = `${results.length} result${results.length > 1 ? 's' : ''} for "${query}"`;
+
+      resultsGrid.innerHTML = results.map(item => `
+        <a href="/food/${item.id}/" class="food-card">
+          <div class="card-image-wrap">
+            ${item.image_url ? `<img class="dish-img" src="${item.image_url}" alt="${item.name}">` : `<div class="dish-img"></div>`}
+            ${item.discount > 0 ? `<div class="discount-badge">${item.discount}% OFF</div>` : ''}
+            ${parseFloat(item.rating) > 0 ? `<div class="rating-badge">⭐ ${item.rating}</div>` : ''}
+            <div class="pref-dot ${item.is_nonveg ? 'nonveg' : 'veg'}"><span class="inner-dot"></span></div>
+          </div>
+          <div class="card-body">
+            <h3>${item.name}</h3>
+            <p class="tagline">${item.description || ''}</p>
+            <div class="bottom-row">
+              <div class="price-box">
+                ${item.discount > 0
+                  ? `<span class="old-price">₹${item.price}</span><span class="price">₹${item.discounted_price}</span>`
+                  : `<span class="price">₹${item.price}</span>`}
+                <span class="views-badge">👁️ ${item.views} views</span>
+              </div>
+              <button type="button" class="btn-cart" onclick="event.preventDefault(); event.stopPropagation(); addToCartAjax(${item.id}, this);">Add to Cart</button>
+            </div>
+          </div>
+        </a>
+      `).join('');
+    }
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function showToast(message) {
+      const toast = document.getElementById('error-toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+
+    function addToCartAjax(pk, btn) {
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = 'Adding...';
+
+      fetch('/cart/add/' + pk + '/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrftoken,
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'quantity=1',
+      })
+        .then(res => res.text().then(text => {
+          let data;
+          try { data = JSON.parse(text); }
+          catch (e) { throw new Error('Server error — check Django console.'); }
+          if (!res.ok) throw new Error(data.error || ('Server error ' + res.status));
+          return data;
+        }))
+        .then(data => {
+          if (data.success) {
+            document.getElementById('added-bar-text').textContent = data.item_name + ' added to cart';
+            document.getElementById('added-bar').style.display = 'flex';
+          } else {
+            showToast(data.error || 'Could not add to cart.');
+          }
+        })
+        .catch(err => showToast(err.message || 'Could not add to cart. Please try again.'))
+        .finally(() => { btn.disabled = false; btn.textContent = originalText; });
+    }
+  </script>
+</body>
+</html>

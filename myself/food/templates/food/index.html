@@ -1,0 +1,881 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NK's Hub - Home</title>
+  <link rel="stylesheet" href="{% static 'food/style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Jost', sans-serif;
+      background: #0c0a08;
+      color: #ece4d6;
+    }
+
+    /* ================= NAVBAR ================= */
+    header.navbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 60px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%);
+    }
+
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+    }
+    .monogram {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 1.5px solid #c9a227;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #f2d98a;
+      background: radial-gradient(circle at 35% 30%, rgba(201,162,39,0.18), rgba(0,0,0,0) 70%);
+      transition: box-shadow 0.4s ease, transform 0.4s ease;
+    }
+    .logo-link:hover .monogram {
+      box-shadow: 0 0 22px rgba(201,162,39,0.55);
+      transform: scale(1.06);
+    }
+    .logo-text .name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: #f2ead9;
+      line-height: 1.1;
+    }
+    .logo-text .sub {
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: #a68a4e;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    header.navbar nav {
+      display: flex;
+      align-items: center;
+    }
+
+    header.navbar nav a {
+      color: #ded4bd;
+      text-decoration: none;
+      margin: 0 18px;
+      font-weight: 400;
+      font-size: 14px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      position: relative;
+      transition: color 0.3s;
+    }
+    header.navbar nav a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 0%;
+      height: 1px;
+      background: #c9a227;
+      transition: width 0.3s ease;
+    }
+    header.navbar nav a:hover {
+      color: #f2d98a;
+    }
+    header.navbar nav a:hover::after {
+      width: 100%;
+    }
+
+    /* ================= HERO (video + menu-page jaisa orange tint) ================= */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 640px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      text-align: center;
+      background: #0c0a08;
+    }
+    .bg-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      z-index: 0;
+    }
+    .video-overlay {
+      position: absolute;
+      inset: 0;
+      /* menu-page jaisa orange tint, lekin video ko dikhne bhi deta hai */
+      background: linear-gradient(180deg, rgba(255,123,0,0.5) 0%, rgba(255,69,0,0.25) 45%, rgba(12,10,8,0.85) 100%);
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 120px 20px 60px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 22px;
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 2px;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #fff2dc;
+      margin-bottom: 30px;
+    }
+    .badge .dot {
+      width: 5px;
+      height: 5px;
+      background: #fff2dc;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #fff2dc;
+    }
+
+    .welcome-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 72px;
+      font-weight: 600;
+      line-height: 1.05;
+      color: #fffaf0;
+      margin: 0;
+      text-shadow: 0 6px 30px rgba(0,0,0,0.5);
+    }
+    .welcome-text em {
+      font-style: italic;
+      color: #ffe6b3;
+    }
+
+    .divider {
+      width: 70px;
+      height: 1px;
+      background: #fff2dc;
+      margin: 26px auto;
+    }
+
+    .tagline {
+      font-size: 17px;
+      font-weight: 300;
+      letter-spacing: 1px;
+      color: #fff2dc;
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .hero-buttons {
+      margin-top: 42px;
+      display: flex;
+      gap: 18px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 15px 38px;
+      font-size: 13px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 2px;
+      transition: 0.35s ease;
+      font-weight: 500;
+    }
+    .btn-solid {
+      background: #fff2dc;
+      color: #a34700;
+    }
+    .btn-solid:hover {
+      background: #fff;
+      box-shadow: 0 0 24px rgba(255,255,255,0.5);
+    }
+    .btn-outline {
+      border: 1px solid #fff2dc;
+      color: #fff2dc;
+      background: transparent;
+    }
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.12);
+    }
+
+    /* ================= GALLERY (premium/VIP look) ================= */
+    .gallery-section {
+      padding: 90px 50px;
+      background: #14110d;
+      text-align: center;
+    }
+    .gallery-eyebrow {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: #a68a4e;
+      margin-bottom: 10px;
+    }
+    .gallery-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 36px;
+      color: #f2ead9;
+      margin-bottom: 50px;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 34px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .gallery figure {
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid rgba(201,162,39,0.25);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+      transition: transform 0.45s ease, box-shadow 0.45s ease, border-color 0.45s ease;
+    }
+    .gallery figure:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 22px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,162,39,0.7);
+      border-color: #c9a227;
+    }
+    .gallery figure::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.9) 100%);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .gallery figure::after {
+      content: '★ Signature';
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 2;
+      background: rgba(201,162,39,0.92);
+      color: #14110d;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+    .gallery img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(12%) brightness(0.85) saturate(1.05);
+      transition: transform 0.7s ease, filter 0.7s ease;
+    }
+    .gallery figure:hover img {
+      transform: scale(1.14);
+      filter: grayscale(0%) brightness(1.03) saturate(1.2);
+    }
+    .gallery figcaption {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      z-index: 2;
+      padding: 26px 20px 18px;
+      text-align: left;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #f5ecd8;
+      text-transform: none;
+      text-shadow: 0 4px 14px rgba(0,0,0,0.6);
+    }
+    @media (max-width: 860px) {
+      .gallery { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .gallery { grid-template-columns: 1fr; }
+    }
+
+    /* ================= FOOTER (Flipkart-style) ================= */
+    .site-footer {
+      background: #0c0a08;
+      border-top: 1px solid rgba(201,162,39,0.25);
+      padding: 60px 60px 0;
+    }
+    .footer-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-bottom: 40px;
+    }
+    .footer-col {
+      flex: 1;
+      min-width: 200px;
+    }
+    .footer-col h4 {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #a68a4e;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+    .footer-col a {
+      display: block;
+      color: #ded4bd;
+      text-decoration: none;
+      font-size: 13.5px;
+      margin-bottom: 10px;
+      transition: color 0.25s;
+    }
+    .footer-col a:hover {
+      color: #f2d98a;
+    }
+    .footer-col p {
+      color: #ded4bd;
+      font-size: 13.5px;
+      line-height: 1.7;
+      margin: 0 0 10px;
+    }
+    .footer-col p a {
+      display: inline;
+      color: #f2d98a;
+    }
+    .footer-bottom {
+      border-top: 1px solid rgba(201,162,39,0.15);
+      padding: 20px 0;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .footer-bottom p {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #8a7a58;
+    }
+    .footer-credit {
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: #8a7a58;
+    }
+    .footer-credit strong {
+      color: #f2d98a;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+  </style>
+</head>
+<body>
+
+
+
+
+
+<!-- 🤖 Cute AI Chatbot Widget -->
+<style>
+  .nk-bot-launcher {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 68px;
+    height: 68px;
+    border-radius: 22px;
+    background: linear-gradient(145deg, #fc9948, #ed7239);
+    box-shadow: 0 8px 24px rgba(201,162,39,0.45), 0 0 0 rgba(255,183,77,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    border: 2px solid rgba(255,255,255,0.35);
+    animation: nkFloat 3s ease-in-out infinite;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .nk-bot-launcher:hover {
+    transform: scale(1.08) rotate(-3deg);
+    box-shadow: 0 10px 30px rgba(201,162,39,0.65);
+  }
+  @keyframes nkFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .nk-face {
+    width: 42px;
+    height: 34px;
+    position: relative;
+  }
+  .nk-eye {
+    position: absolute;
+    top: 4px;
+    width: 9px;
+    height: 12px;
+    background: #2b1c00;
+    border-radius: 50%;
+    animation: nkBlink 4.5s infinite;
+  }
+  .nk-eye.left { left: 5px; }
+  .nk-eye.right { right: 5px; }
+  @keyframes nkBlink {
+    0%, 92%, 100% { height: 12px; }
+    95% { height: 1.5px; }
+  }
+  .nk-mouth {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 10px;
+    border-bottom: 3.5px solid #2b1c00;
+    border-radius: 0 0 20px 20px;
+  }
+  .nk-notify-dot {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 14px;
+    height: 14px;
+    background: #ff4d3d;
+    border-radius: 50%;
+    border: 2px solid #0c0a08;
+  }
+
+  .nk-chat-window {
+    position: fixed;
+    bottom: 108px;
+    right: 28px;
+    width: 320px;
+    max-height: 440px;
+    background: #17140f;
+    border: 1px solid rgba(201,162,39,0.35);
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;
+    font-family: 'Jost', sans-serif;
+  }
+  .nk-chat-window.open {
+    display: flex;
+    animation: nkPopIn 0.35s ease;
+  }
+  @keyframes nkPopIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .nk-chat-header {
+    background: linear-gradient(135deg, #ff7b00, #c9a227);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .nk-mini-face {
+    width: 38px;
+    height: 38px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .nk-mini-eye {
+    position: absolute;
+    top: 12px;
+    width: 5px;
+    height: 7px;
+    background: #fff2dc;
+    border-radius: 50%;
+  }
+  .nk-mini-eye.left { left: 10px; }
+  .nk-mini-eye.right { right: 10px; }
+  .nk-mini-mouth {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 6px;
+    border-bottom: 2px solid #fff2dc;
+    border-radius: 0 0 12px 12px;
+  }
+  .nk-chat-title { color: #fff2dc; font-weight: 600; font-size: 14.5px; letter-spacing: 0.5px; }
+  .nk-chat-sub { color: rgba(255,242,220,0.85); font-size: 10.5px; letter-spacing: 0.5px; }
+  .nk-chat-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #fff2dc;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.85;
+  }
+  .nk-chat-close:hover { opacity: 1; }
+
+  .nk-chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #14110d;
+  }
+  .nk-msg {
+    max-width: 82%;
+    padding: 9px 13px;
+    border-radius: 14px;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  .nk-msg.bot {
+    background: #26211a;
+    color: #ece4d6;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .nk-msg.user {
+    background: linear-gradient(135deg, #ff7b00, #c9a227);
+    color: #1a1206;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+    font-weight: 500;
+  }
+  .nk-typing {
+    align-self: flex-start;
+    background: #26211a;
+    padding: 10px 14px;
+    border-radius: 14px;
+    border-bottom-left-radius: 4px;
+    display: flex;
+    gap: 4px;
+  }
+  .nk-typing span {
+    width: 6px; height: 6px;
+    background: #c9a227;
+    border-radius: 50%;
+    animation: nkTyping 1.2s infinite ease-in-out;
+  }
+  .nk-typing span:nth-child(2) { animation-delay: 0.2s; }
+  .nk-typing span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes nkTyping {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  .nk-chat-footer {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: #17140f;
+    border-top: 1px solid rgba(201,162,39,0.2);
+  }
+  .nk-chat-input {
+    flex: 1;
+    background: #26211a;
+    border: 1px solid rgba(201,162,39,0.25);
+    border-radius: 20px;
+    padding: 9px 15px;
+    color: #ece4d6;
+    font-size: 13.5px;
+    outline: none;
+    font-family: 'Jost', sans-serif;
+  }
+  .nk-chat-input:focus { border-color: #59bfd4; }
+  .nk-chat-send {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #81c9e1, #c9a227);
+    color: #1a1206;
+    font-size: 15px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  .nk-chat-send:hover { transform: scale(1.08); }
+
+  @media (max-width: 480px) {
+    .nk-chat-window { width: 92vw; right: 4vw; bottom: 100px; }
+    .nk-bot-launcher { right: 20px; bottom: 20px; }
+  }
+</style>
+
+<div class="nk-bot-launcher" id="nkBotLauncher">
+  <div class="nk-face">
+    <div class="nk-eye left"></div>
+    <div class="nk-eye right"></div>
+    <div class="nk-mouth"></div>
+  </div>
+  <div class="nk-notify-dot" id="nkNotifyDot"></div>
+</div>
+
+<div class="nk-chat-window" id="nkChatWindow">
+  <div class="nk-chat-header">
+    <div class="nk-mini-face">
+      <div class="nk-mini-eye left"></div>
+      <div class="nk-mini-eye right"></div>
+      <div class="nk-mini-mouth"></div>
+    </div>
+    <div>
+      <div class="nk-chat-title">NK Bot</div>
+      <div class="nk-chat-sub">● Online — Indore's foodie helper</div>
+    </div>
+    <button class="nk-chat-close" id="nkChatClose">✕</button>
+  </div>
+  <div class="nk-chat-body" id="nkChatBody">
+    <div class="nk-msg bot">Hii! 👋 Main NK Bot hoon. Menu, order ya delivery ke baare mein kuch bhi puchho!</div>
+  </div>
+  <div class="nk-chat-footer">
+    <input type="text" class="nk-chat-input" id="nkChatInput" placeholder="Type your message...">
+    <button class="nk-chat-send" id="nkChatSend">➤</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const launcher = document.getElementById('nkBotLauncher');
+  const chatWindow = document.getElementById('nkChatWindow');
+  const closeBtn = document.getElementById('nkChatClose');
+  const body = document.getElementById('nkChatBody');
+  const input = document.getElementById('nkChatInput');
+  const sendBtn = document.getElementById('nkChatSend');
+  const notifyDot = document.getElementById('nkNotifyDot');
+
+  launcher.addEventListener('click', () => {
+    chatWindow.classList.toggle('open');
+    notifyDot.style.display = 'none';
+    if (chatWindow.classList.contains('open')) input.focus();
+  });
+  closeBtn.addEventListener('click', () => chatWindow.classList.remove('open'));
+
+  function addMsg(text, who) {
+    const div = document.createElement('div');
+    div.className = 'nk-msg ' + who;
+    div.textContent = text;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function showTyping() {
+    const t = document.createElement('div');
+    t.className = 'nk-typing';
+    t.id = 'nkTypingIndicator';
+    t.innerHTML = '<span></span><span></span><span></span>';
+    body.appendChild(t);
+    body.scrollTop = body.scrollHeight;
+  }
+  function hideTyping() {
+    const t = document.getElementById('nkTypingIndicator');
+    if (t) t.remove();
+  }
+
+  function botReply(msg) {
+    const m = msg.toLowerCase();
+
+    if (/^(hi|hii+|hello+|hey+|namaste|namaskar)\b/.test(m)) {
+      const greetings = [
+        "Namaste! Kaise madad kar sakta hoon aapki? 😊",
+        "Hii! Kya khaane ka mann hai aaj? 🍽️",
+        "Hello! Bhookh lagi hai kya? Menu check kar lo 😋"
+      ];
+      return greetings[Math.floor(Math.random() * greetings.length)];
+    }
+    if (m.includes('menu')) return "Hamare menu mein pizza, burger, momos, pav bhaji, sandwich aur bhi bahut kuch hai! /menu/ page pe dekho 🍕";
+    if (m.includes('order')) return "Order karne ke liye Menu page pe jao, item choose karo aur cart mein add kar do 🛒";
+    if (m.includes('cancel')) return "Order cancel karne ke liye My Orders → us order ko kholo → Cancel Order dabao (sirf 'Placed' status mein hi cancel hota hai) ❌";
+    if (m.includes('track') || m.includes('status')) return "Apne order ka status My Orders page pe dekh sakte ho — Placed, On the Way, ya Delivered 📦";
+    if (m.includes('delivery') || m.includes('time') || m.includes('kitna time') || m.includes('kab')) return "Delivery usually 30-45 min mein ho jati hai, area ke hisaab se 🚴";
+    if (m.includes('area') || m.includes('pincode') || m.includes('deliver kar')) return "Hum Vijay Nagar, Palasia, Sudama Nagar, Rajendra Nagar aur Malviya Nagar mein deliver karte hain 📍";
+    if (m.includes('price') || m.includes('cost') || m.includes('rate') || m.includes('kitna')) return "Prices menu page pe har item ke saath diye hain, discount bhi wahin dikh jayega 💰";
+    if (m.includes('coupon') || m.includes('discount') || m.includes('offer')) return "Checkout page pe 'Apply Coupon' try karo — SAVE10 ya FLAT20 use kar sakte ho 🏷️";
+    if (m.includes('payment') || m.includes('upi') || m.includes('cod') || m.includes('cash')) return "UPI, Card, aur Cash on Delivery (₹1000 tak) — teeno options available hain checkout pe 💳";
+    if (m.includes('favourite') || m.includes('favorite') || m.includes('wishlist')) return "Kisi bhi dish pe heart ❤️ icon dabao usse Favourites mein save karne ke liye — My Account → Favourites mein dekh sakte ho";
+    if (m.includes('address')) return "My Account → Addresses mein jaake naya address add ya change kar sakte ho 🏠";
+    if (m.includes('contact') || m.includes('complain') || m.includes('problem') || m.includes('issue')) return "Koi bhi dikkat ho to nachiketdhakad@gmail.com pe mail kar do, ya Contact Us page use karo 📧";
+    if (m.includes('help')) return "Sabse detailed help ke liye /help/ page check karo — wahan saare FAQs hain 🙋";
+    if (m.includes('thank')) return "Aapka swagat hai! Khaana enjoy karo 🍽️";
+    if (m.includes('bye')) return "Bye! Phir milenge, khana enjoy karo 👋";
+    if (m.includes('ok','ohk','okiee'))return "Hmm or ky help kr sakta hu apki";
+    if (m.includes('chutiya'))return "abhe oye khajur ja na du ky ak";
+     if (m.includes('nachiket', 'nachiket dhakad'))return "ha bhai bol me sir nachiket dhakad ka bot hu ";
+    const fallbacks = [
+      "Hmm, thoda aur bata sakte ho? Menu, order, delivery ya payment ke baare mein pucho 🙂",
+      "Iska jawab mere paas abhi nahi hai — Menu ya /help/ page pe zyada info milegi",
+      "Samajh nahi paya thoda, par Menu page pe saari details mil jayengi 📋",
+      "Ye specific sawaal ke liye Contact Us pe mail kar do, jaldi reply milega 📧"
+    ];
+    return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+}
+
+  function handleSend() {
+    const text = input.value.trim();
+    if (!text) return;
+    addMsg(text, 'user');
+    input.value = '';
+    showTyping();
+    setTimeout(() => {
+      hideTyping();
+      addMsg(botReply(text), 'bot');
+    }, 700 + Math.random() * 500);
+  }
+
+  sendBtn.addEventListener('click', handleSend);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSend(); });
+})();
+</script>
+
+  <!-- 🔝 Navbar -->
+  <header class="navbar">
+    <a href="/menu/" class="logo-link">
+      <div class="monogram">NK</div>
+      <div class="logo-text">
+        <div class="name">NK's Hub</div>
+        <div class="sub">Est. Indore</div>
+      </div>
+    </a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/menu/">Menu</a>
+      <a href="{% url 'my_orders' %}">My Orders</a>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'my_account' %}">👤 {{ user.username }}</a>
+      {% else %}
+        <a href="{% url 'login' %}">Login</a>
+      {% endif %}
+
+      <a href="/about/">About Us</a>
+      <a href="#help">Help</a>
+    </nav>
+  </header>
+
+  <!-- 🍊 Hero — menu-page style orange banner -->
+  <section class="hero">
+    <video class="bg-video" autoplay muted loop playsinline poster="{% static 'food/images/burger.jpg' %}">
+      <source src="{% static 'videos/hero.mp4' %}" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <div class="hero-content">
+      <div class="badge"><span class="dot"></span> Indore's best food zone </div>
+      <h1 class="welcome-text">Welcome to <em>NK's Hub</em></h1>
+      <div class="divider"></div>
+      <p class="tagline">Crafted burgers, wood-fired pizzas & slow-simmered momos — fresh, organic, and made for those who taste the difference.</p>
+      <div class="hero-buttons">
+        {% if user.is_authenticated %}
+          <a href="/menu/" class="btn btn-solid">Order Now</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-solid">Order Now</a>
+        {% endif %}
+        <a href="/menu/" class="btn btn-outline">View Menu</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🖼️ Gallery — naye food photos add kiye -->
+  <section class="gallery-section">
+    <div class="gallery-eyebrow">Signature Selection</div>
+    <div class="gallery-heading">What's Cooking</div>
+    <div class="gallery">
+      <figure><img src="{% static 'food/images/pizza.jpg' %}" alt="pizza"><figcaption>Pizza</figcaption></figure>
+      <figure><img src="{% static 'food/images/momos.jpg' %}" alt="Momos"><figcaption>Momos</figcaption></figure>
+      <figure><img src="{% static 'food/images/coldcoffee.jpg' %}" alt="Cold Coffee"><figcaption>Cold Coffee</figcaption></figure>
+      <figure><img src="{% static 'food/images/chocolate.jpg' %}" alt="chocolate"><figcaption>Chocolate Mousse</figcaption></figure>
+       <figure><img src="{% static 'food/images/cake.jpg' %}" alt="Rajasthani Thali"><figcaption>Cake</figcaption></figure>
+      <figure><img src="{% static 'food/images/rajasthani.jpg' %}" alt="Rajasthani Thali"><figcaption>Rajasthani</figcaption></figure>
+       
+      
+      <figure><img src="{% static 'food/images/pav.jpg' %}" alt="Pav Bhaji"><figcaption>Pav bhaji </figcaption></figure>
+     <figure><img src="{% static 'food/images/icecream.jpg' %}" alt="Ice Cream"><figcaption>Ice Cream</figcaption></figure>
+      <figure><img src="{% static 'food/images/colddrink.jpg' %}" alt="Cold Drink"><figcaption>Cold Drink</figcaption></figure>
+      <figure><img src="{% static 'food/images/sandwich.jpg' %}" alt="Sandwich"><figcaption>Sandwich</figcaption></figure>
+      
+      <figure><img src="{% static 'food/images/salad.jpg' %}" alt="Salad"><figcaption>Salad</figcaption></figure>
+      <figure><img src="{% static 'food/images/street.jpg' %}" alt="Street Food"><figcaption>Samosa</figcaption></figure>
+      <figure><img src="{% static 'food/images/snaks.jpg' %}" alt="Pav Bhaji"><figcaption>Snaks</figcaption></figure>
+     
+      
+    </div>
+  </section>
+
+  <!-- 🦶 Footer — Flipkart-style (About / Help / Contact) -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-col">
+        <h4>About</h4>
+        <a href="/about/">About NK's Hub</a>
+        <a href="/menu/">Our Menu</a>
+        <a href="{% url 'my_orders' %}">My Orders</a>
+      </div>
+
+      <div class="footer-col" id="help">
+        <h4>Help</h4>
+        <a href="{% url 'help' %}">FAQ</a>
+        <a href="/about/">Payments</a>
+        <a href="{% url 'my_orders' %}">Track Order</a>
+        <a href="{% url 'cart' %}">Cancellation & Returns</a>
+        <a href="mailto:nachiketdhakad@gmail.com">Contact Us</a>
+      
+ 
+      </a>
+
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Mail us: <a href="mailto:nachiketdhakad@gmail.com">nachiketdhakad@gmail.com</a></p>
+        <p>Registered Office:<br>Khedawda, Ujjain,<br>Madhya Pradesh, India</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>NK's Hub — Indore © 2026</p>
+      <p class="footer-credit">Designed by <strong>Nachiket Dhakad</strong></p>
+    </div>
+  </footer>
+
+</body>
+</html>

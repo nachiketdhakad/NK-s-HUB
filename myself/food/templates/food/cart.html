@@ -1,0 +1,386 @@
+{% extends 'food/base.html' %}
+{% load static %}
+{% block title %}My Cart - NK's Hub{% endblock %}
+
+{% block content %}
+<style>
+  :root{
+    --nk-orange:#FF5A1F;
+    --nk-orange-dark:#E8480F;
+    --nk-cream:#FFF7EE;
+    --nk-charcoal:#2B2118;
+    --nk-brown:#6B5545;
+    --nk-mustard:#FFC229;
+    --nk-green:#2E8B57;
+    --nk-line:#F0E2D3;
+    --nk-shadow: 0 10px 24px rgba(43,33,24,.10), 0 2px 6px rgba(43,33,24,.06);
+  }
+
+  .nk-cart-page{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    background:var(--nk-cream);
+    color:var(--nk-charcoal);
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+
+  /* ---------- HEADING ---------- */
+  .nk-cart-head{ padding:34px 6% 10px; }
+  .nk-eyebrow{
+    color:var(--nk-orange); font-weight:700; font-size:12.5px; letter-spacing:1.5px;
+    text-transform:uppercase;
+  }
+  .nk-cart-head h1{
+    font-family:'Baloo 2','Poppins',sans-serif; font-size:34px; margin:4px 0 2px;
+  }
+  .nk-cart-head p{ color:var(--nk-brown); font-size:14.5px; margin:0; }
+
+  /* ---------- LAYOUT ---------- */
+  .nk-cart-wrap{
+    display:grid; grid-template-columns: 1.65fr 1fr;
+    gap:28px; padding:22px 6% 10px; align-items:start;
+  }
+  @media (max-width:900px){ .nk-cart-wrap{ grid-template-columns:1fr; } }
+
+  /* ---------- CART ITEM CARD ---------- */
+  .nk-items-card{
+    background:#fff; border-radius:18px; box-shadow:var(--nk-shadow);
+    padding:6px 22px;
+  }
+  .nk-item{
+    display:flex; align-items:center; gap:18px;
+    padding:22px 0; border-bottom:1px solid var(--nk-line);
+  }
+  .nk-item:last-child{ border-bottom:none; }
+  .nk-item-img{
+    width:82px; height:82px; border-radius:16px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:38px;
+    background:linear-gradient(160deg,#FFE9D6,#FFD8B8); overflow:hidden;
+    box-shadow: inset 0 -4px 8px rgba(230,120,30,.15);
+  }
+  .nk-item-img img{ width:100%; height:100%; object-fit:cover; }
+  .nk-item-info{ flex:1; min-width:0; }
+  .nk-item-info h3{ margin:0 0 4px; font-size:16.5px; font-weight:700; }
+  .nk-item-price{ font-weight:700; color:var(--nk-charcoal); font-size:15px; }
+  .nk-item-price .old{
+    color:#B7A895; text-decoration:line-through; font-weight:500; margin-left:8px; font-size:13px;
+  }
+  .nk-item-sub{ font-size:12.5px; color:var(--nk-brown); margin-top:2px; }
+
+  .nk-item-actions{ display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+  .nk-qty{
+    display:flex; align-items:center; gap:0; border:1.5px solid var(--nk-orange);
+    border-radius:10px; overflow:hidden;
+  }
+  .nk-qty form{ margin:0; }
+  .nk-qty button{
+    background:var(--nk-cream); border:none; width:30px; height:30px;
+    font-size:16px; font-weight:700; color:var(--nk-orange-dark); cursor:pointer;
+  }
+  .nk-qty button:hover{ background:var(--nk-orange); color:#fff; }
+  .nk-qty .nk-qty-val{
+    width:32px; text-align:center; font-weight:700; font-size:14.5px; display:inline-block;
+  }
+  .nk-remove-form{ margin:0; }
+  .nk-remove{
+    background:none; border:none; color:#B7A895; font-size:12.5px; font-weight:600;
+    cursor:pointer; display:flex; align-items:center; gap:5px; padding:0;
+  }
+  .nk-remove:hover{ color:#C0392B; }
+
+  .nk-empty{ text-align:center; padding:60px 20px; }
+  .nk-empty .emoji{ font-size:54px; }
+  .nk-empty h3{ font-family:'Baloo 2','Poppins',sans-serif; font-size:22px; margin:10px 0 6px;}
+  .nk-empty p{ color:var(--nk-brown); margin-bottom:18px; }
+  .nk-btn-browse{
+    display:inline-block; background:var(--nk-orange); color:#fff; text-decoration:none;
+    font-weight:700; padding:12px 26px; border-radius:12px; box-shadow:var(--nk-shadow);
+  }
+
+  /* ---------- COUPON ---------- */
+  .nk-coupon-card{
+    background:#fff; border-radius:18px; box-shadow:var(--nk-shadow);
+    padding:20px 22px; margin-top:20px;
+  }
+  .nk-coupon-card h4{ margin:0 0 12px; font-size:15px; }
+  .nk-coupon-row{ display:flex; gap:10px; }
+  .nk-coupon-row input{
+    flex:1; padding:11px 14px; border-radius:10px; border:1.5px solid var(--nk-line);
+    font-size:14px; text-transform:uppercase; letter-spacing:.5px;
+  }
+  .nk-coupon-row input:focus{ outline:none; border-color:var(--nk-orange); }
+  .nk-coupon-row button{
+    background:var(--nk-charcoal); color:#fff; border:none; padding:0 20px;
+    border-radius:10px; font-weight:700; cursor:pointer; font-size:13.5px;
+  }
+  .nk-coupon-row button:hover{ background:var(--nk-orange); }
+  .nk-coupon-msg{ font-size:13px; margin-top:10px; font-weight:600; display:none; }
+  .nk-coupon-msg.ok{ color:var(--nk-green); display:block; }
+  .nk-coupon-msg.err{ color:#C0392B; display:block; }
+  .nk-coupon-chips{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .nk-chip{
+    font-size:12px; background:var(--nk-cream); border:1px dashed var(--nk-orange);
+    color:var(--nk-orange-dark); padding:5px 10px; border-radius:8px; cursor:pointer; font-weight:700;
+  }
+
+  /* ---------- RECEIPT SUMMARY (signature element) ---------- */
+  .nk-receipt{
+    position:sticky; top:20px;
+    background:#fff; border-radius:18px 18px 0 0;
+    box-shadow:var(--nk-shadow); padding:24px 24px 18px; position:relative;
+  }
+  .nk-receipt::after{
+    content:''; position:absolute; left:0; right:0; bottom:-11px; height:22px;
+    background:
+      linear-gradient(-45deg, transparent 16px, #fff 0) 0 0,
+      linear-gradient(45deg, transparent 16px, #fff 0) 0 0;
+    background-size:22px 22px; background-repeat:repeat-x;
+    filter: drop-shadow(0 6px 6px rgba(43,33,24,.08));
+  }
+  .nk-receipt h4{ font-family:'Baloo 2','Poppins',sans-serif; font-size:17px; margin:0 0 16px; }
+  .nk-row{ display:flex; justify-content:space-between; font-size:14px; padding:7px 0; color:var(--nk-brown); }
+  .nk-row span:last-child{ color:var(--nk-charcoal); font-weight:600; }
+  .nk-row.coupon span:last-child{ color:var(--nk-green); }
+  .nk-divider{ border-top:1.5px dashed var(--nk-line); margin:10px 0; }
+  .nk-row.total{ font-size:16.5px; font-weight:800; color:var(--nk-charcoal); padding-top:4px; }
+  .nk-row.total span:last-child{ color:var(--nk-orange-dark); }
+  .nk-save-banner{
+    background:#E6F4EA; color:var(--nk-green); font-size:13px; font-weight:700;
+    padding:9px 12px; border-radius:10px; margin:14px 0; text-align:center; display:none;
+  }
+  .nk-place-order{
+    display:block; width:100%; text-align:center; background:var(--nk-orange); color:#fff; border:none;
+    padding:15px; border-radius:12px; font-weight:800; font-size:15.5px;
+    cursor:pointer; margin-top:6px; box-shadow:0 8px 18px rgba(255,90,31,.35);
+    transition:transform .15s; text-decoration:none;
+  }
+  .nk-place-order:hover{ transform:translateY(-2px); background:var(--nk-orange-dark); color:#fff; }
+  .nk-place-order[disabled]{ opacity:.5; cursor:not-allowed; pointer-events:none; }
+  .nk-secure{ display:flex; align-items:center; gap:8px; font-size:12px; color:var(--nk-brown); margin-top:14px; }
+
+  /* ---------- RECOMMENDED ---------- */
+  .nk-reco{ padding:38px 6% 0; }
+  .nk-reco h3{ font-family:'Baloo 2','Poppins',sans-serif; font-size:22px; margin-bottom:16px; }
+  .nk-reco-scroll{ display:flex; gap:18px; overflow-x:auto; padding-bottom:14px; }
+  .nk-reco-card{
+    background:#fff; border-radius:16px; box-shadow:var(--nk-shadow);
+    min-width:190px; padding:14px; flex-shrink:0; transition:transform .2s, box-shadow .2s;
+  }
+  .nk-reco-card:hover{ transform:translateY(-5px) rotate(-.5deg); box-shadow:0 16px 28px rgba(43,33,24,.16); }
+  .nk-reco-img{
+    height:110px; border-radius:12px; margin-bottom:10px; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; font-size:42px;
+    background:linear-gradient(160deg,#FFE9D6,#FFD8B8);
+  }
+  .nk-reco-img img{ width:100%; height:100%; object-fit:cover; }
+  .nk-reco-card h5{ font-size:14px; margin:0 0 4px; }
+  .nk-reco-price{ font-size:13.5px; font-weight:700; color:var(--nk-orange-dark); margin-bottom:10px; }
+  .nk-reco-add{
+    width:100%; background:var(--nk-cream); border:1.5px solid var(--nk-orange);
+    color:var(--nk-orange-dark); font-weight:700; padding:8px; border-radius:9px;
+    cursor:pointer; font-size:13px; margin:0;
+  }
+  .nk-reco-add:hover{ background:var(--nk-orange); color:#fff; }
+</style>
+
+<div class="nk-cart-page">
+
+  <div class="nk-cart-head">
+    <div class="nk-eyebrow">Order Summary</div>
+    <h1>My Cart</h1>
+    <p>Review your dishes, apply a coupon, and check out — fresh and hot.</p>
+  </div>
+
+  <div class="nk-cart-wrap">
+
+    <!-- LEFT: items -->
+    <div>
+      {% if cart_items %}
+      <div class="nk-items-card">
+        {% for item in cart_items %}
+        <div class="nk-item">
+          <div class="nk-item-img">
+            {% if item.food.image %}<img src="{{ item.food.image.url }}" alt="{{ item.food.name }}">{% else %}🍽️{% endif %}
+          </div>
+          <div class="nk-item-info">
+            <h3>{{ item.food.name }}</h3>
+            <div class="nk-item-price">
+              ₹{{ item.price }}
+              {% if item.food.price and item.food.price > item.price %}<span class="old">₹{{ item.food.price }}</span>{% endif %}
+            </div>
+            <div class="nk-item-sub">Subtotal: ₹{{ item.subtotal }}</div>
+          </div>
+          <div class="nk-item-actions">
+            <div class="nk-qty">
+              <form class="nk-qty-form" method="post" action="/cart/update/{{ item.food.id }}/dec/">
+                {% csrf_token %}<button type="submit" aria-label="Decrease quantity">−</button>
+              </form>
+              <span class="nk-qty-val">{{ item.quantity }}</span>
+              <form class="nk-qty-form" method="post" action="/cart/update/{{ item.food.id }}/inc/">
+                {% csrf_token %}<button type="submit" aria-label="Increase quantity">+</button>
+              </form>
+            </div>
+            <form class="nk-remove-form" method="post" action="/cart/remove/{{ item.food.id }}/">
+              {% csrf_token %}<button type="submit" class="nk-remove">🗑 Remove</button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="nk-items-card nk-empty">
+        <div class="emoji">🍽️</div>
+        <h3>Your cart is empty</h3>
+        <p>Looks like you haven't added anything yet.</p>
+        <a href="/menu" class="nk-btn-browse">Browse Menu</a>
+      </div>
+      {% endif %}
+
+      <!-- COUPON -->
+      <div class="nk-coupon-card">
+        <h4>🏷️ Apply Coupon</h4>
+        <div class="nk-coupon-row">
+          <input type="text" id="nk-coupon-input" placeholder="Enter coupon code">
+          <button id="nk-coupon-apply" type="button">Apply</button>
+        </div>
+        <div class="nk-coupon-msg" id="nk-coupon-msg"></div>
+        <div class="nk-coupon-chips">
+          <span class="nk-chip" data-code="FOOD20">FOOD20 – 20% off</span>
+          <span class="nk-chip" data-code="WELCOME50">WELCOME50 – ₹50 off</span>
+          <span class="nk-chip" data-code="FREESHIP">FREESHIP</span>
+         
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: receipt summary -->
+    <div>
+      <div class="nk-receipt" id="nk-receipt" data-item-total="{{ total|default:'0' }}" data-has-items="{{ cart_items|length }}">
+        <h4>Bill Details</h4>
+        <div class="nk-row"><span>Item Total</span><span id="nk-item-total">₹{{ total|default:'0' }}</span></div>
+        <div class="nk-row coupon" id="nk-coupon-row" style="display:none;">
+          <span>Coupon Discount</span><span id="nk-coupon-discount">− ₹0</span>
+        </div>
+        <div class="nk-row"><span>Delivery Fee</span><span id="nk-delivery">₹{% if cart_items %}29{% else %}0{% endif %}</span></div>
+        <div class="nk-divider"></div>
+        <div class="nk-row total"><span>To Pay</span><span id="nk-total">₹{{ total|default:'0' }}</span></div>
+        <div class="nk-save-banner" id="nk-save-banner"></div>
+        {% if cart_items %}
+        <a href="{% url 'checkout' %}" class="nk-place-order">Place Order</a>
+       
+        {% endif %}
+        <div class="nk-secure">🔒 Safe payments · Fresh food guaranteed</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= RECOMMENDED ================= -->
+  {% if recommended_items %}
+  <div class="nk-reco">
+    <h3>You may also like 🔥</h3>
+    <div class="nk-reco-scroll">
+      {% for food in recommended_items %}
+      <div class="nk-reco-card">
+        <div class="nk-reco-img">
+          {% if food.image %}<img src="{{ food.image.url }}" alt="{{ food.name }}">{% else %}🍴{% endif %}
+        </div>
+        <h5>{{ food.name }}</h5>
+        <div class="nk-reco-price">₹{{ food.discounted_price }}</div>
+        <form method="post" action="/cart/add/{{ food.id }}/">
+          {% csrf_token %}<button type="submit" class="nk-reco-add">Add to Cart</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+(function(){
+  const receipt      = document.getElementById('nk-receipt');
+  const elItemTotal   = document.getElementById('nk-item-total');
+  const elCouponRow   = document.getElementById('nk-coupon-row');
+  const elCouponDisc  = document.getElementById('nk-coupon-discount');
+  const elDelivery    = document.getElementById('nk-delivery');
+  const elTotal        = document.getElementById('nk-total');
+  const elSaveBanner  = document.getElementById('nk-save-banner');
+  const couponInput   = document.getElementById('nk-coupon-input');
+  const couponMsg     = document.getElementById('nk-coupon-msg');
+
+  const itemTotal = parseFloat(receipt.dataset.itemTotal) || 0;
+  const hasItems  = parseInt(receipt.dataset.hasItems, 10) > 0;
+  const DELIVERY_FEE = hasItems ? 29 : 0;
+
+  const COUPONS = {
+    'FOOD20':    { type:'percent', value:20, max:100, label:'FOOD20 (20% off, up to ₹100)' },
+    'WELCOME50': { type:'flat',    value:50, label:'WELCOME50 (₹50 off)' },
+    'FREESHIP':  { type:'shipping', value:0, label:'FREESHIP (free delivery)' }
+  };
+
+  function recalc(couponCode){
+    let couponDiscount = 0;
+    let deliveryFee = DELIVERY_FEE;
+
+    if(couponCode && COUPONS[couponCode]){
+      const c = COUPONS[couponCode];
+      if(c.type === 'percent'){
+        couponDiscount = Math.min(itemTotal * (c.value/100), c.max);
+      } else if(c.type === 'flat'){
+        couponDiscount = Math.min(c.value, itemTotal);
+      } else if(c.type === 'shipping'){
+        deliveryFee = 0;
+      }
+    }
+
+    const total = Math.max(itemTotal - couponDiscount + deliveryFee, 0);
+
+    elDelivery.textContent = deliveryFee ? '₹' + deliveryFee : (hasItems ? 'FREE' : '₹0');
+    if(couponDiscount > 0){
+      elCouponRow.style.display = 'flex';
+      elCouponDisc.textContent = '− ₹' + couponDiscount.toFixed(0);
+    } else {
+      elCouponRow.style.display = 'none';
+    }
+    elTotal.textContent = '₹' + total.toFixed(0);
+
+    const savings = couponDiscount + (couponCode === 'FREESHIP' ? DELIVERY_FEE : 0);
+    if(savings > 0){
+      elSaveBanner.style.display = 'block';
+      elSaveBanner.textContent = "You'll save ₹" + savings.toFixed(0) + " with this coupon!";
+    } else {
+      elSaveBanner.style.display = 'none';
+    }
+  }
+
+  function tryApplyCoupon(code){
+    code = code.trim().toUpperCase();
+    if(!code) return;
+    if(COUPONS[code]){
+      couponMsg.className = 'nk-coupon-msg ok';
+      couponMsg.textContent = '✔ Coupon applied — ' + COUPONS[code].label;
+      recalc(code);
+    } else {
+      couponMsg.className = 'nk-coupon-msg err';
+      couponMsg.textContent = '✖ Invalid coupon code. Try FOOD20, WELCOME50 or FREESHIP.';
+      recalc(null);
+    }
+  }
+
+  document.getElementById('nk-coupon-apply').addEventListener('click', function(){
+    tryApplyCoupon(couponInput.value);
+  });
+  couponInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); tryApplyCoupon(couponInput.value); }
+  });
+  document.querySelectorAll('.nk-chip').forEach(chip=>{
+    chip.addEventListener('click', function(){
+      couponInput.value = chip.dataset.code;
+      tryApplyCoupon(chip.dataset.code);
+    });
+  });
+
+  recalc(null);
+})();
+</script>
+{% endblock %}

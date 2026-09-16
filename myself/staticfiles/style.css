@@ -1,0 +1,91 @@
+body {
+  background: linear-gradient(135deg, #0d0d0d, #1a0033);
+  font-family: 'Orbitron', sans-serif;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+}
+
+header h1 {
+  font-size: 3rem;
+  text-shadow: 0 0 20px #0ff, 0 0 40px #f0f;
+}
+
+nav a {
+  margin: 0 20px;
+  color: #0ff;
+  text-decoration: none;
+  font-weight: bold;
+  position: relative;
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background: #f0f;
+  transition: 0.3s;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+
+.card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 20px;
+  display: inline-block;
+  width: 250px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 15px;
+  box-shadow: 0 0 15px #0ff;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #f0f;
+}
+
+button {
+  background: linear-gradient(45deg, #0ff, #ff0, #f0f);
+  border: none;
+  padding: 12px 25px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #000;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 10px #0ff; }
+  50% { box-shadow: 0 0 25px #f0f; }
+  100% { box-shadow: 0 0 10px #0ff; }
+}
+
+.login-box {
+  margin-top: 100px;
+  background: rgba(255,255,255,0.1);
+  padding: 40px;
+  border-radius: 20px;
+  display: inline-block;
+  box-shadow: 0 0 20px #0ff;
+}

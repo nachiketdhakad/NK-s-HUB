@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Account - NK's Hub</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Poppins', sans-serif; background: #fff8f2; color: #222; }
+    header.navbar { display: flex; justify-content: space-between; align-items: center; background-color: #fff; padding: 15px 60px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+    header.navbar .logo { font-size: 26px; font-weight: bold; color: #ff4500; text-decoration: none; }
+    header.navbar nav a { color: #333; text-decoration: none; margin: 0 15px; font-weight: 500; transition: 0.3s; }
+    header.navbar nav a:hover { color: #00c853; }
+
+    .banner { background: linear-gradient(90deg, #ff7b00, #ff4500); border-radius: 20px; max-width: 1150px; margin: 30px auto 0; padding: 26px 40px; color: #fff; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+    .banner-user .name { font-size: 22px; font-weight: 700; }
+    .banner-user .phone { font-size: 14px; opacity: 0.9; margin-top: 4px; }
+    .edit-profile-btn { background: #fff; border: none; color: #ff7b00; padding: 10px 22px; border-radius: 20px; font-weight: 700; font-size: 13px; text-decoration: none; }
+    .edit-profile-btn:hover { background: #fff0e0; }
+
+    .account-wrap { max-width: 1150px; margin: 24px auto 60px; background: #fff; display: flex; border-radius: 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); overflow: hidden; min-height: 500px; flex-wrap: wrap; }
+
+    .sidebar { width: 260px; background: #fff8f2; padding: 20px 0; border-right: 1px solid #ffe4c9; }
+    .sidebar a { display: flex; align-items: center; gap: 14px; padding: 16px 24px; color: #333; text-decoration: none; font-weight: 600; font-size: 15px; }
+    .sidebar a.active { background: #fff; color: #ff7b00; border-right: 3px solid #ff7b00; }
+    .sidebar a:hover { background: #fff; }
+    .sidebar .icon { font-size: 18px; }
+
+    .content { flex: 1; padding: 40px; min-width: 280px; }
+    .content h2 { margin: 0 0 24px; font-size: 24px; color: #222; }
+
+    .order-card {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;
+      padding: 20px; border-radius: 14px; background: #fff8f2; margin-bottom: 16px;
+      text-decoration: none; color: inherit; transition: 0.25s ease;
+      border: 1px solid transparent;
+    }
+    .order-card:hover { background: #fff3e6; border-color: #ffd8ac; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(255,123,0,0.12); }
+    .order-info { flex: 1; }
+    .order-info strong { font-size: 16px; }
+    .order-info .order-meta { color: #888; font-size: 13px; margin-top: 4px; }
+    .order-items-line { font-size: 14px; color: #444; margin-top: 6px; }
+    .status-pill { background: #e9f9ef; color: #00994d; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; margin-left: 8px; }
+    .status-pill.cancelled { background: #fdeaea; color: #c0392b; }
+    .status-pill.placed { background: #fff2e6; color: #ff7b00; }
+    .total-paid { font-weight: 700; color: #ff7b00; white-space: nowrap; }
+
+    .empty-orders { text-align: center; color: #666; padding: 60px 0; }
+    .empty-orders a { display: inline-block; margin-top: 14px; background: linear-gradient(90deg, #00c853, #00994d); color: #fff; padding: 12px 28px; border-radius: 30px; text-decoration: none; font-weight: 700; }
+
+    .msg-success { background: #e9f9ef; color: #00994d; padding: 10px 14px; border-radius: 10px; font-size: 14px; margin-bottom: 16px; }
+
+    /* Logout confirm modal */
+    .logout-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: none; align-items: center; justify-content: center; z-index: 1000; }
+    .logout-modal-overlay.show { display: flex; }
+    .logout-modal-box { background: #fff; border-radius: 16px; padding: 32px 28px; max-width: 360px; width: 90%; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.2); animation: logoutPop 0.18s ease-out; }
+    @keyframes logoutPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .logout-modal-icon { width: 56px; height: 56px; border-radius: 50%; background: #fff2e6; color: #ff7b00; font-size: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+    .logout-modal-box h3 { margin: 0 0 8px; font-size: 18px; color: #222; }
+    .logout-modal-box p { margin: 0 0 22px; font-size: 13.5px; color: #888; line-height: 1.5; }
+    .logout-modal-actions { display: flex; gap: 10px; }
+    .btn-stay, .btn-confirm-logout { flex: 1; padding: 11px; border-radius: 10px; font-weight: 700; font-size: 13.5px; cursor: pointer; border: none; font-family: inherit; }
+    .btn-stay { background: #f2f2f2; color: #333; }
+    .btn-stay:hover { background: #e8e8e8; }
+    .btn-confirm-logout { background: #ff4500; color: #fff; }
+    .btn-confirm-logout:hover { background: #e03e00; }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="/" class="logo">NK's Hub</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/menu/">Menu</a>
+      <a href="{% url 'my_account' %}">My Account</a>
+      <a href="#" class="logout-trigger">Logout</a>
+    </nav>
+  </header>
+
+  <div class="banner">
+    <div class="banner-user">
+      <div class="name">👤 {{ user.username }}</div>
+      {% if phone %}<div class="phone">📞 {{ phone }}</div>{% endif %}
+    </div>
+    <a href="{% url 'edit_profile' %}" class="edit-profile-btn">EDIT PROFILE</a>
+  </div>
+
+  <div class="account-wrap">
+    <div class="sidebar">
+      <a href="{% url 'my_account' %}" class="active"><span class="icon">📦</span> Orders</a>
+      <a href="{% url 'cart' %}"><span class="icon">🛒</span> Cart</a>
+      <a href="{% url 'favourites' %}"><span class="icon">❤️</span> Favourites</a>
+      <a href="{% url 'addresses' %}"><span class="icon">📍</span> Addresses</a>
+      <a href="{% url 'edit_profile' %}"><span class="icon">⚙️</span> Settings</a>
+      <a href="#" class="logout-trigger"><span class="icon">🚪</span> Logout</a>
+    </div>
+
+    <div class="content">
+      <h2>Past Orders</h2>
+
+      {% if messages %}
+        {% for m in messages %}
+          <div class="msg-success">{{ m }}</div>
+        {% endfor %}
+      {% endif %}
+
+      {% for order in orders %}
+        <a href="{% url 'order_detail' order.id %}" class="order-card">
+          <div class="order-info">
+            <strong>Order #{{ order.id }}</strong>
+            <span class="status-pill {% if order.status == 'Cancelled' %}cancelled{% elif order.status == 'Placed' %}placed{% endif %}">{{ order.status }}</span>
+            <div class="order-meta">{{ order.created_at|date:"D, d M Y, h:i A" }} | {{ order.address }}</div>
+            <div class="order-items-line">
+              {% for item in order.items.all %}
+                {{ item.food_item.name }} x {{ item.quantity }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          <div class="total-paid">₹{{ order.total_price }}</div>
+        </a>
+      {% empty %}
+        <div class="empty-orders">
+          <p>No orders placed yet.</p>
+          <a href="{% url 'menu' %}">Browse Menu</a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Logout Confirm Modal -->
+  <div id="logoutModal" class="logout-modal-overlay">
+    <div class="logout-modal-box">
+      <div class="logout-modal-icon">🚪</div>
+      <h3>Logout karna hai?</h3>
+      <p>Aapko dobara login karna padega apna account access karne ke liye.</p>
+      <div class="logout-modal-actions">
+        <button class="btn-stay" onclick="closeLogoutModal()">Stay</button>
+        <button class="btn-confirm-logout" onclick="window.location.href='{% url 'logout' %}'">Yes, Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.querySelectorAll('.logout-trigger').forEach(el => {
+      el.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('logoutModal').classList.add('show');
+      });
+    });
+    function closeLogoutModal() {
+      document.getElementById('logoutModal').classList.remove('show');
+    }
+  </script>
+
+</body>
+</html>

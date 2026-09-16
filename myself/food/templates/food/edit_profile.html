@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Profile - NK's Hub</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #fff8f2;
+      color: #222;
+    }
+    header.navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      padding: 15px 60px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    header.navbar .logo { font-size: 26px; font-weight: bold; color: #ff4500; text-decoration: none; }
+    header.navbar nav a {
+      color: #333; text-decoration: none; margin: 0 15px; font-weight: 500; transition: 0.3s;
+    }
+    header.navbar nav a:hover { color: #00c853; }
+
+    .banner {
+      background: linear-gradient(90deg, #ff7b00, #ff4500);
+      border-radius: 20px;
+      max-width: 1150px;
+      margin: 30px auto 0;
+      padding: 26px 40px;
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .banner h1 { margin: 0; font-size: 22px; }
+
+    .account-wrap {
+      max-width: 1150px;
+      margin: 24px auto 60px;
+      background: #fff;
+      display: flex;
+      border-radius: 20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+      overflow: hidden;
+      min-height: 500px;
+      flex-wrap: wrap;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: #fff8f2;
+      padding: 20px 0;
+      border-right: 1px solid #ffe4c9;
+    }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 24px;
+      color: #333;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+    }
+    .sidebar a.active {
+      background: #fff;
+      color: #ff7b00;
+      border-right: 3px solid #ff7b00;
+    }
+    .sidebar a:hover { background: #fff; }
+    .sidebar .icon { font-size: 18px; }
+
+    .content { flex: 1; padding: 40px; max-width: 420px; min-width: 280px; }
+    .content h2 { margin: 0 0 24px; font-size: 24px; color: #222; }
+
+    .field-group { margin-bottom: 20px; }
+    .field-group label {
+      display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px;
+    }
+    .field-group input {
+      width: 100%; padding: 11px 14px; border: 1.5px solid #e2e2e2; border-radius: 10px;
+      font-size: 14px; font-family: 'Poppins', sans-serif; outline: none; transition: 0.2s;
+    }
+    .field-group input:focus { border-color: #ff7b00; }
+
+    .save-btn {
+      background: linear-gradient(90deg, #00c853, #00994d); color: #fff; border: none;
+      padding: 12px 30px; border-radius: 30px; font-weight: 700; font-size: 14px; cursor: pointer;
+    }
+    .save-btn:hover { opacity: 0.95; }
+
+    .cancel-link { margin-left: 16px; color: #666; text-decoration: none; font-size: 14px; }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="/" class="logo">NK's Hub</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/menu/">Menu</a>
+      <a href="{% url 'my_account' %}">My Account</a>
+      <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+  </header>
+
+  <div class="banner">
+    <h1>Edit Profile</h1>
+  </div>
+
+  <div class="account-wrap">
+    <div class="sidebar">
+      <a href="{% url 'my_account' %}"><span class="icon">📦</span> Orders</a>
+      <a href="{% url 'cart' %}"><span class="icon">🛒</span> Cart</a>
+      <a href="#"><span class="icon">❤️</span> Favourites</a>
+      <a href="#"><span class="icon">📍</span> Addresses</a>
+      <a href="{% url 'edit_profile' %}" class="active"><span class="icon">⚙️</span> Settings</a>
+      <a href="{% url 'logout' %}"><span class="icon">🚪</span> Logout</a>
+    </div>
+
+    <div class="content">
+      <h2>Account Details</h2>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="field-group">
+          <label>Username</label>
+          <input type="text" name="username" value="{{ user.username }}" required>
+        </div>
+        <div class="field-group">
+          <label>Email</label>
+          <input type="email" name="email" value="{{ user.email }}" required>
+        </div>
+        <div class="field-group">
+          <label>Phone Number</label>
+          <input type="text" name="phone" value="{{ profile.phone|default:'' }}" pattern="[0-9]{10}" title="10 digit phone number">
+        </div>
+
+        <button type="submit" class="save-btn">Save Changes</button>
+        <a href="{% url 'my_account' %}" class="cancel-link">Cancel</a>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

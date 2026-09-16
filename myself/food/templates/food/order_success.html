@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Placed - NK's Hub</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ff7b00, #ffb347);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .success-wrapper { max-width: 480px; width: 100%; background: #fff; border-radius: 20px; padding: 30px 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+    .tick { font-size: 50px; color: #00c853; }
+    h2 { color: #222; margin: 10px 0; }
+    p { color: #555; margin: 6px 0; }
+    .total { font-weight: bold; font-size: 22px; color: #ff7b00; margin: 16px 0; }
+    .btn { display: block; text-decoration: none; padding: 12px; border-radius: 30px; font-weight: 600; margin-top: 12px; }
+    .btn-primary { background: linear-gradient(90deg, #00c853, #00994d); color: #fff; }
+    .btn-secondary { color: #333; }
+  </style>
+</head>
+<body>
+
+  <div class="success-wrapper">
+    <div class="tick">✅</div>
+    <h2>Order Placed!</h2>
+    <p>Order #{{ order.id }} confirmed.</p>
+    <p>Payment: {{ order.get_payment_method_display }}</p>
+    <p>Delivering to: {{ order.address }}</p>
+    <div class="total">₹{{ order.total_price }}</div>
+
+    <a href="{% url 'my_orders' %}" class="btn btn-primary">View My Orders</a>
+    <a href="{% url 'menu' %}" class="btn btn-secondary">&larr; Back to Menu</a>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Help & Support - NK's Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Poppins', sans-serif; background: #fdf6ef; color: #2b2b2b; }
+
+    header.navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      background-color: #1c1c1c; padding: 16px 60px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.18);
+    }
+    header.navbar .logo { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #ffb347; text-decoration: none; }
+    header.navbar nav a { color: #e8e8e8; text-decoration: none; margin: 0 14px; font-weight: 500; font-size: 14px; }
+    header.navbar nav a:hover { color: #ffb347; }
+
+    .help-banner {
+      background: linear-gradient(120deg, #ff7b00, #ff4500 70%);
+      padding: 46px 60px; color: #fff;
+    }
+    .help-banner h1 { margin: 0 0 6px; font-family: 'Playfair Display', serif; font-size: 32px; }
+    .help-banner p { margin: 0; opacity: 0.9; font-size: 15px; }
+
+    .help-wrap { max-width: 1150px; margin: 0 auto; padding: 40px 24px 80px; display: flex; gap: 30px; flex-wrap: wrap; }
+
+    .help-sidebar { width: 250px; flex-shrink: 0; }
+    .side-item {
+      padding: 14px 18px; border-radius: 10px; font-weight: 600; font-size: 14.5px;
+      color: #444; cursor: pointer; margin-bottom: 6px; transition: 0.2s;
+    }
+    .side-item:hover { background: #fff3e8; color: #ff7b00; }
+    .side-item.active { background: #ff7b00; color: #fff; box-shadow: 0 6px 16px rgba(255,123,0,0.3); }
+
+    .help-content { flex: 1; min-width: 280px; }
+    .help-content h2 { font-family: 'Playfair Display', serif; font-size: 24px; margin: 0 0 20px; }
+
+    .faq-category { display: none; }
+    .faq-category.active { display: block; }
+
+    .faq-item { border-bottom: 1px solid #eee; }
+    .faq-question {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 4px; cursor: pointer; font-weight: 600; font-size: 15px; color: #1c1c1c;
+    }
+    .faq-question .chev { transition: transform 0.25s; color: #999; font-size: 14px; }
+    .faq-item.open .faq-question .chev { transform: rotate(180deg); color: #ff7b00; }
+    .faq-answer {
+      max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+      font-size: 14px; color: #666; line-height: 1.7;
+    }
+    .faq-item.open .faq-answer { padding-bottom: 18px; }
+    .faq-answer-inner { padding: 0 4px; }
+
+    .contact-box {
+      background: #fff; border-radius: 16px; padding: 24px; margin-top: 30px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06); border: 1px solid #f4ece2;
+    }
+    .contact-box h3 { margin: 0 0 10px; font-size: 16px; }
+    .contact-box p { margin: 4px 0; font-size: 14px; color: #555; }
+    .contact-box a { color: #ff7b00; font-weight: 600; text-decoration: none; }
+
+    footer { text-align: center; color: #999; padding: 24px; font-size: 13px; background: #1c1c1c; }
+
+    @media (max-width: 720px) {
+      .help-sidebar { width: 100%; display: flex; overflow-x: auto; gap: 8px; }
+      .side-item { flex-shrink: 0; white-space: nowrap; margin-bottom: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="/" class="logo">NK's Hub</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/menu/">Menu</a>
+      <a href="{% url 'my_orders' %}">My Orders</a>
+      <a href="/about/">About Us</a>
+    </nav>
+  </header>
+
+  <div class="help-banner">
+    <h1>Help & Support</h1>
+    <p>Let's take a step ahead and help you better.</p>
+  </div>
+
+  <div class="help-wrap">
+    <div class="help-sidebar">
+      <div class="side-item active" data-cat="orders" onclick="showCategory('orders', this)">Help with Orders</div>
+      <div class="side-item" data-cat="payments" onclick="showCategory('payments', this)">Payments & Refunds</div>
+      <div class="side-item" data-cat="delivery" onclick="showCategory('delivery', this)">Delivery & Address</div>
+      <div class="side-item" data-cat="account" onclick="showCategory('account', this)">Account & Profile</div>
+      <div class="side-item" data-cat="general" onclick="showCategory('general', this)">General Issues</div>
+    </div>
+
+    <div class="help-content">
+
+      <div class="faq-category active" id="cat-orders">
+        <h2>Help with Orders</h2>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>How do I place an order?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">Browse the Menu page, tap "Add to Cart" on the dishes you want, then go to Cart and click Checkout. Fill in your delivery address and payment method to place the order.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>Can I edit my order after placing it?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">Yes — as long as your order status is "Placed", go to My Orders → open the order → Edit Delivery Details to update your phone number or address. Once it moves to "On the Way" it can no longer be edited.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>How do I cancel my order?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">Go to My Orders → open the order you want to cancel → click "Cancel Order" and confirm. Orders can only be cancelled while their status is still "Placed".</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>How can I track my order?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">Open My Orders from the navbar and click on any order to see its live status — Placed, On the Way, or Delivered.</div></div>
+        </div>
+      </div>
+
+      <div class="faq-category" id="cat-payments">
+        <h2>Payments & Refunds</h2>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>What payment methods are accepted?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">We accept UPI (Scan & Pay), Credit/Debit Cards, and Cash on Delivery. Cash on Delivery is available only for orders under ₹1000.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>My payment failed but money got deducted, what now?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">If a payment is deducted but the order doesn't show up in My Orders, please wait a few minutes for it to reflect. If it still doesn't appear, contact us at nachiketdhakad@gmail.com with your payment screenshot and we'll resolve it quickly.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>How do I apply a coupon code?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">At Checkout, click on "Apply Coupon" in the order summary, enter your code, and hit Apply. The discount will reflect in your final bill immediately.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>How long do refunds take?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">For cancelled prepaid orders, refunds are usually processed within 5-7 business days back to your original payment method.</div></div>
+        </div>
+      </div>
+
+      <div class="faq-category" id="cat-delivery">
+        <h2>Delivery & Address</h2>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>Which areas do you deliver to?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">We currently deliver to Vijay Nagar, Palasia, Sudama Nagar, Rajendra Nagar and Malviya Nagar in Indore. Enter your pincode at checkout to check availability instantly.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>How do I add or change my delivery address?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">Go to My Account → Addresses, or click "Change Address" during checkout. You can save up to 4 addresses and mark one as active.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>How long does delivery usually take?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">Delivery typically takes 30-45 minutes depending on your distance from the nearest outlet and current order volume.</div></div>
+        </div>
+      </div>
+
+      <div class="faq-category" id="cat-account">
+        <h2>Account & Profile</h2>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>How do I edit my profile details?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">Go to My Account → Edit Profile to update your username, email, or phone number.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>How does the Favourites list work?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">Tap the heart icon on any dish's page to save it to your Favourites. View or remove them anytime from My Account → Favourites.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>I forgot my password, what do I do?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">Please email us at nachiketdhakad@gmail.com with your registered username or phone number and we'll help you regain access.</div></div>
+        </div>
+      </div>
+
+      <div class="faq-category" id="cat-general">
+        <h2>General Issues</h2>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>The app/website isn't loading properly</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">Try refreshing the page or clearing your browser cache. If the issue persists, please reach out to us with a screenshot of the problem.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>I want to give feedback about my order</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">You can leave a rating and review on any dish's page after ordering, or write to us directly via the Contact Us page.</div></div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)"><span>How do I report a safety concern?</span><span class="chev">▾</span></div>
+          <div class="faq-answer"><div class="faq-answer-inner">For urgent safety issues regarding food quality or delivery, email us immediately at nachiketdhakad@gmail.com with details and we'll prioritize your case.</div></div>
+        </div>
+      </div>
+
+      <div class="contact-box">
+        <h3>Still need help?</h3>
+        <p>Mail us at <a href="mailto:nachiketdhakad@gmail.com">nachiketdhakad@gmail.com</a> — we usually respond within 24 hours.</p>
+        <p>Or visit our <a href="{% url 'contact' %}">Contact Us</a> page to send a message directly.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>NK's Hub — Indore © 2026</footer>
+
+  <script>
+    function showCategory(cat, el) {
+      document.querySelectorAll('.faq-category').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.side-item').forEach(s => s.classList.remove('active'));
+      document.getElementById('cat-' + cat).classList.add('active');
+      el.classList.add('active');
+    }
+
+    function toggleFaq(questionEl) {
+      const item = questionEl.parentElement;
+      const answer = item.querySelector('.faq-answer');
+      const isOpen = item.classList.contains('open');
+
+      item.parentElement.querySelectorAll('.faq-item').forEach(i => {
+        i.classList.remove('open');
+        i.querySelector('.faq-answer').style.maxHeight = null;
+      });
+
+      if (!isOpen) {
+        item.classList.add('open');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+    }
+  </script>
+</body>
+</html>

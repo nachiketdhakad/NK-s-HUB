@@ -1,0 +1,515 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ item.name }} - NK's Hub</title>
+  <link rel="stylesheet" href="{% static 'food/style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #fdf6ef;
+      min-height: 100vh;
+      color: #2b2b2b;
+    }
+    header.navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      background-color: #1c1c1c; padding: 16px 60px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.18);
+    }
+    header.navbar .logo { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #ffb347; text-decoration: none; }
+    header.navbar nav a { color: #e8e8e8; text-decoration: none; margin: 0 14px; font-weight: 500; font-size: 14px; }
+    header.navbar nav a:hover { color: #ffb347; }
+    .cart-indicator {
+      background: linear-gradient(135deg, #ff7b00, #ff4500); color: #fff; padding: 9px 18px;
+      border-radius: 22px; font-weight: 600; font-size: 14px; text-decoration: none;
+    }
+
+    .page-wrap { max-width: 1100px; margin: 0 auto; padding: 30px 24px 80px; }
+    .back-link { display:inline-flex; align-items:center; gap:6px; color:#ff7b00; text-decoration:none; font-weight:600; font-size:14px; margin-bottom:20px; }
+    .back-link:hover { text-decoration: underline; }
+
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    @media (max-width: 800px) { .detail-grid { grid-template-columns: 1fr; } }
+
+    .gallery-main {
+      position: relative;
+      width: 100%; height: 380px; border-radius: 20px; overflow: hidden;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.12); background: #fff;
+    }
+    .gallery-main img { width: 100%; height: 100%; object-fit: cover; }
+    .gallery-thumbs { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    .gallery-thumbs img {
+      width: 68px; height: 68px; object-fit: cover; border-radius: 12px; cursor: pointer;
+      border: 2px solid transparent; opacity: 0.75; transition: 0.2s;
+    }
+    .gallery-thumbs img:hover, .gallery-thumbs img.active { opacity: 1; border-color: #ff7b00; }
+
+    /* ❤️ Favourite heart button — top-right corner of the image */
+    .fav-heart-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.92);
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+      transition: transform 0.2s ease, background 0.2s ease;
+      z-index: 5;
+    }
+    .fav-heart-btn:hover {
+      background: #fff;
+      transform: scale(1.1);
+    }
+    .fav-heart-btn.pop {
+      animation: heartPop 0.45s ease;
+    }
+    @keyframes heartPop {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.45) rotate(-8deg); }
+      55%  { transform: scale(0.85) rotate(6deg); }
+      75%  { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .info-col { display: flex; flex-direction: column; }
+    .info-badges { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; }
+    .badge { padding: 5px 14px; border-radius: 20px; font-size: 11.5px; font-weight: 700; }
+    .badge.discount { background: linear-gradient(135deg, #ff4500, #ff7b00); color: #fff; }
+    .badge.rating { background: rgba(20,20,20,0.85); color: #ffd700; }
+    .badge.veg { background: #e8f5e9; color: #0a8a0a; }
+    .badge.nonveg { background: #ffebee; color: #b30000; }
+
+    .info-col h1 { font-family: 'Playfair Display', serif; font-size: 30px; margin: 0 0 8px; color: #1c1c1c; }
+    .info-col .tagline { color: #999; font-size: 14px; font-style: italic; margin-bottom: 14px; }
+    .info-col .description { font-size: 14.5px; line-height: 1.7; color: #555; margin-bottom: 20px; }
+
+    .price-block { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+    .price-block .now { font-size: 28px; font-weight: 800; color: #ff7b00; }
+    .price-block .old { font-size: 16px; color: #b5b5b5; text-decoration: line-through; }
+    .views-line { font-size: 12.5px; color: #999; margin-bottom: 22px; }
+
+    .qty-row { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .qty-box { display: flex; align-items: center; border: 1.5px solid #eee; border-radius: 12px; overflow: hidden; }
+    .qty-box button { width: 38px; height: 40px; border: none; background: #fdf6ef; font-size: 18px; font-weight: 700; color: #ff7b00; cursor: pointer; }
+    .qty-box button:hover { background: #ffe4c9; }
+    .qty-box span { width: 40px; text-align: center; font-weight: 700; font-size: 15px; }
+
+    .action-row { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn-add-cart, .btn-buy-now {
+      border: none; padding: 14px 30px; border-radius: 26px; font-weight: 700; font-size: 14.5px;
+      cursor: pointer; transition: 0.2s;
+    }
+    .btn-add-cart { background: linear-gradient(135deg, #00c853, #00994d); color: #fff; box-shadow: 0 6px 16px rgba(0,153,77,0.3); }
+    .btn-buy-now { background: #1c1c1c; color: #fff; }
+    .btn-add-cart:hover, .btn-buy-now:hover { transform: scale(1.04); }
+
+    .section-title {
+      font-family: 'Playfair Display', serif; font-size: 22px; margin: 50px 0 20px; color: #1c1c1c;
+    }
+
+    /* Reviews */
+    .review-card { background: #fff; border-radius: 16px; padding: 18px 22px; margin-bottom: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.06); border: 1px solid #f4ece2; }
+    .review-card .review-top { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .review-card .review-user { font-weight: 700; font-size: 14px; }
+    .review-card .review-rating { color: #ffb400; font-weight: 700; font-size: 13px; }
+    .review-card .review-comment { font-size: 13.5px; color: #666; line-height: 1.6; }
+    .no-reviews { color: #999; font-size: 14px; padding: 20px 0; }
+
+    .review-form { background: #fff; border-radius: 16px; padding: 22px; margin-top: 20px; box-shadow: 0 4px 14px rgba(0,0,0,0.06); border: 1px solid #f4ece2; }
+    .review-form select, .review-form textarea {
+      width: 100%; padding: 11px 14px; border-radius: 10px; border: 1.5px solid #eee;
+      font-family: 'Poppins', sans-serif; font-size: 14px; margin-bottom: 12px; outline: none;
+    }
+    .review-form textarea { min-height: 80px; resize: vertical; }
+    .review-form button {
+      background: linear-gradient(135deg, #ff7b00, #ff4500); color: #fff; border: none;
+      padding: 11px 26px; border-radius: 22px; font-weight: 700; cursor: pointer;
+    }
+    .login-to-review { font-size: 13.5px; color: #888; }
+    .login-to-review a { color: #ff7b00; font-weight: 600; text-decoration: none; }
+
+    /* Related items */
+    .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+    .related-card {
+      background: #fff; border-radius: 18px; overflow: hidden; text-decoration: none; color: inherit;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08); border: 1px solid #f4ece2; transition: 0.25s; display: block;
+    }
+    .related-card:hover { transform: translateY(-6px); box-shadow: 0 16px 28px rgba(0,0,0,0.14); }
+    .related-card img { width: 100%; height: 140px; object-fit: cover; display: block; }
+    .related-card .rc-body { padding: 12px 14px 16px; }
+    .related-card h4 { margin: 0 0 4px; font-size: 14.5px; color: #1c1c1c; }
+    .related-card .rc-price { font-weight: 700; color: #ff7b00; font-size: 14px; }
+
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; background: #1c1c1c; color: #fff;
+      padding: 14px 20px; border-radius: 12px; font-size: 13.5px; box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+      z-index: 200; display: none; max-width: 320px;
+    }
+ 
+ 
+ 
+ 
+ .site-footer {
+      background: #1c1c1c;
+      padding: 50px 60px 0;
+      margin-top: 40px;
+    }
+    .footer-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-bottom: 36px;
+      border-bottom: 1px solid rgba(255,179,71,0.15);
+    }
+    .footer-col { flex: 1; min-width: 200px; }
+    .footer-col h4 {
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #ffb347;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+    .footer-col a {
+      display: block;
+      color: #ccc;
+      text-decoration: none;
+      font-size: 13.5px;
+      margin-bottom: 10px;
+      transition: color 0.25s;
+    }
+    .footer-col a:hover { color: #ffb347; }
+    .footer-col p { color: #ccc; font-size: 13.5px; line-height: 1.7; margin: 0 0 10px; }
+    .footer-col p a { display: inline; color: #ffb347; }
+    .footer-bottom {
+      padding: 18px 0;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .footer-bottom p {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #999;
+    }
+    .footer-credit { font-size: 12px; letter-spacing: 1px; color: #999; }
+    .footer-credit strong { color: #ffb347; font-weight: 700; letter-spacing: 1.5px; }
+
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; background: #1c1c1c; color: #fff;
+      padding: 14px 20px; border-radius: 12px; font-size: 13.5px; box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+      z-index: 200; display: none; max-width: 320px;
+    }
+
+    /* ===== NK Bot chat widget ===== */
+    .nk-bot{position:fixed;bottom:26px;right:26px;width:60px;height:60px;border-radius:20px;background:linear-gradient(135deg,#ffb347,#ff7b00);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:999;box-shadow:0 8px 22px rgba(255,123,0,0.4);animation:nkFloat 3s ease-in-out infinite;}
+    @keyframes nkFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+    .nk-face{width:34px;height:28px;position:relative;}
+    .nk-eye{position:absolute;top:3px;width:7px;height:9px;background:#1c1c1c;border-radius:50%;animation:nkBlink 4.5s infinite;}
+    .nk-eye.l{left:4px}.nk-eye.r{right:4px}
+    @keyframes nkBlink{0%,92%,100%{height:9px}95%{height:1.5px}}
+    .nk-mouth{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:16px;height:8px;border-bottom:3px solid #1c1c1c;border-radius:0 0 16px 16px;}
+    .nk-chat{position:fixed;bottom:98px;right:26px;width:300px;max-height:400px;background:#1c1c1c;border-radius:16px;box-shadow:0 20px 44px rgba(0,0,0,0.5);display:none;flex-direction:column;overflow:hidden;z-index:1000;}
+    .nk-chat.open{display:flex;}
+    .nk-chat-h{background:linear-gradient(135deg,#ff7b00,#ffb347);padding:12px 14px;display:flex;align-items:center;gap:8px;}
+    .nk-chat-h span{color:#1c1c1c;font-weight:700;font-size:14px;}
+    .nk-chat-x{margin-left:auto;background:none;border:none;font-size:16px;cursor:pointer;color:#1c1c1c;}
+    .nk-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:8px;background:#141414;}
+    .nk-msg{max-width:82%;padding:8px 12px;border-radius:12px;font-size:13px;line-height:1.4;}
+    .nk-msg.bot{background:#2a2a2a;color:#eee;align-self:flex-start;}
+    .nk-msg.user{background:linear-gradient(135deg,#ff7b00,#ffb347);color:#1c1c1c;align-self:flex-end;font-weight:600;}
+    .nk-foot{display:flex;gap:6px;padding:10px;background:#1c1c1c;border-top:1px solid #333;}
+    .nk-foot input{flex:1;background:#2a2a2a;border:1px solid #444;border-radius:18px;padding:8px 12px;color:#eee;font-size:13px;outline:none;}
+    .nk-foot button{width:34px;height:34px;border-radius:50%;border:none;background:linear-gradient(135deg,#ff7b00,#ffb347);cursor:pointer;}
+ 
+
+ </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="/" class="logo">NK's Hub</a>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/menu/">Menu</a>
+      <a href="{% url 'my_orders' %}">My Orders</a>
+    </nav>
+    <a href="{% url 'cart' %}" class="cart-indicator">🛒 <span id="cart-count">{{ cart_count }}</span></a>
+  </header>
+
+  <div class="page-wrap">
+    <a href="{% url 'menu' %}" class="back-link">&larr; Back to Menu</a>
+
+    <div class="detail-grid">
+      <!-- LEFT: Gallery -->
+      <div>
+        <div class="gallery-main">
+          {% if item.image %}
+            <img id="main-img" src="{{ item.image.url }}" alt="{{ item.name }}">
+          {% endif %}
+
+          <button type="button"
+                  id="favHeartBtn"
+                  class="fav-heart-btn"
+                  onclick="toggleFav({{ item.id }}, this)">
+            <span id="favHeartIcon">{% if item.id in user_fav_ids %}❤️{% else %}🤍{% endif %}</span>
+          </button>
+        </div>
+        {% if gallery_images %}
+        <div class="gallery-thumbs">
+          <img src="{{ item.image.url }}" class="active" onclick="setMainImg(this)">
+          {% for g in gallery_images %}
+            <img src="{{ g.image.url }}" onclick="setMainImg(this)">
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- RIGHT: Info -->
+      <div class="info-col">
+        <div class="info-badges">
+          {% if item.discount %}<span class="badge discount">{{ item.discount }}% OFF</span>{% endif %}
+          {% if avg_rating %}<span class="badge rating">⭐ {{ avg_rating }}</span>{% endif %}
+          {% if item.is_nonveg %}
+            <span class="badge nonveg">🔴 Non-Veg</span>
+          {% else %}
+            <span class="badge veg">🟢 Veg</span>
+          {% endif %}
+        </div>
+
+        <h1>{{ item.name }}</h1>
+        <p class="tagline">{{ item.category }}</p>
+        <p class="description">{{ item.description }}</p>
+
+        <div class="price-block">
+          {% if item.discount %}
+            <span class="now">₹{{ item.discounted_price }}</span>
+            <span class="old">₹{{ item.price }}</span>
+          {% else %}
+            <span class="now">₹{{ item.price }}</span>
+          {% endif %}
+        </div>
+        <div class="views-line">👁️ {{ item.views }} views</div>
+
+        <div class="qty-row">
+          <div class="qty-box">
+            <button type="button" onclick="changeQty(-1)">−</button>
+            <span id="qty-val">1</span>
+            <button type="button" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button type="button" class="btn-add-cart" onclick="addToCartAjax({{ item.id }}, this)">🛒 Add to Cart</button>
+          <form method="POST" action="{% url 'buy_now' item.id %}" style="margin:0;">
+            {% csrf_token %}
+            <input type="hidden" name="quantity" id="buy-now-qty" value="1">
+            <button type="submit" class="btn-buy-now">⚡ Buy Now</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews -->
+    <h2 class="section-title">⭐ Reviews</h2>
+    {% for r in reviews %}
+      <div class="review-card">
+        <div class="review-top">
+          <span class="review-user">{{ r.user.username }}</span>
+          <span class="review-rating">⭐ {{ r.rating }}/5</span>
+        </div>
+        <div class="review-comment">{{ r.comment }}</div>
+      </div>
+    {% empty %}
+      <div class="no-reviews">No reviews yet — be the first to review this dish!</div>
+    {% endfor %}
+
+    <div class="review-form">
+      {% if user.is_authenticated %}
+        <form method="POST">
+          {% csrf_token %}
+          <select name="rating" required>
+            <option value="">Select rating</option>
+            <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+            <option value="4">⭐⭐⭐⭐ Good</option>
+            <option value="3">⭐⭐⭐ Average</option>
+            <option value="2">⭐⭐ Poor</option>
+            <option value="1">⭐ Terrible</option>
+          </select>
+          <textarea name="comment" placeholder="Share your experience..." required></textarea>
+          <button type="submit" name="submit_review" value="1">Submit Review</button>
+        </form>
+      {% else %}
+        <p class="login-to-review">
+          <a href="{% url 'login' %}?next={{ request.path }}">Login</a> to write a review.
+        </p>
+      {% endif %}
+    </div>
+
+    <!-- Related items -->
+    {% if related_items %}
+    <h2 class="section-title">🍽️ You may also like</h2>
+    <div class="related-grid">
+      {% for rel in related_items %}
+        <a href="{% url 'food_detail' rel.id %}" class="related-card">
+          {% if rel.image %}<img src="{{ rel.image.url }}" alt="{{ rel.name }}">{% endif %}
+          <div class="rc-body">
+            <h4>{{ rel.name }}</h4>
+            <div class="rc-price">₹{{ rel.discounted_price }}</div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="toast" id="error-toast"></div>
+
+  <script>
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function toggleFav(pk, btn) {
+      fetch(`/favourite/toggle/${pk}/`, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': csrftoken,
+        }
+      })
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          const icon = document.getElementById('favHeartIcon');
+          icon.textContent = d.is_favourite ? '❤️' : '🤍';
+          btn.classList.remove('pop');
+          void btn.offsetWidth;
+          btn.classList.add('pop');
+          showToast(d.is_favourite ? 'Added to favourites ❤️' : 'Removed from favourites');
+        }
+      })
+      .catch(() => showToast('Login required to use favourites.'));
+    }
+
+    function setMainImg(el) {
+      document.getElementById('main-img').src = el.src;
+      document.querySelectorAll('.gallery-thumbs img').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    let qty = 1;
+    function changeQty(delta) {
+      qty = Math.max(1, qty + delta);
+      document.getElementById('qty-val').textContent = qty;
+      document.getElementById('buy-now-qty').value = qty;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('error-toast');
+      toast.textContent = message;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
+
+    function addToCartAjax(pk, btn) {
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = 'Adding...';
+
+      fetch('/cart/add/' + pk + '/', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrftoken,
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'quantity=' + qty,
+      })
+        .then(res => res.text().then(text => {
+          let data;
+          try { data = JSON.parse(text); }
+          catch (e) { throw new Error('Server error — check Django console.'); }
+          if (!res.ok) throw new Error(data.error || ('Server error ' + res.status));
+          return data;
+        }))
+        .then(data => {
+          if (data.success) {
+            document.getElementById('cart-count').textContent = data.cart_count;
+            showToast(data.item_name + ' added to cart 🎉');
+          }
+        })
+        .catch(err => showToast(err.message || 'Could not add to cart.'))
+        .finally(() => { btn.disabled = false; btn.textContent = originalText; });
+    }
+  </script>
+   <!-- 🦶 Footer — Flipkart-style (About / Help / Contact) -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-col">
+        <h4>About</h4>
+        <a href="/about/">About NK's Hub</a>
+        <a href="/menu/">Our Menu</a>
+        <a href="{% url 'my_orders' %}">My Orders</a>
+      </div>
+
+      <div class="footer-col" id="help">
+        <h4>Help</h4>
+        <a href="{% url 'help' %}">FAQ</a>
+        <a href="/about/">Payments</a>
+        <a href="{% url 'my_orders' %}">Track Order</a>
+        <a href="{% url 'cart' %}">Cancellation & Returns</a>
+        <a href="mailto:nachiketdhakad@gmail.com">Contact Us</a>
+      
+ 
+      </a>
+
+      </div>
+
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>Mail us: <a href="mailto:nachiketdhakad@gmail.com">nachiketdhakad@gmail.com</a></p>
+        <p>Registered Office:<br>Khedawda, Ujjain,<br>Madhya Pradesh, India</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>NK's Hub — Indore © 2026</p>
+      <p class="footer-credit">Designed by <strong>Nachiket Dhakad</strong></p>
+    </div>
+  </footer>
+
+</body>
+</html>

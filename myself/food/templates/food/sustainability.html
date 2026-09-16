@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sustainability - NK's Hub</title>
+  <link rel="stylesheet" href="{% static 'food/style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Poppins', sans-serif; background: #fdf6ef; color: #2b2b2b; }
+
+    header.navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      background-color: #1c1c1c; padding: 16px 60px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.18); flex-wrap: wrap; gap: 10px;
+    }
+    header.navbar .logo { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: #ffb347; text-decoration: none; }
+    header.navbar nav a { color: #e8e8e8; text-decoration: none; margin: 0 15px; font-weight: 500; font-size: 14.5px; transition: 0.25s; }
+    header.navbar nav a:hover { color: #ffb347; }
+
+    .hero {
+      background: #1c1c1c; padding: 60px 60px; text-align: center;
+    }
+    .hero .eyebrow { color: #ffb347; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+    .hero h1 { font-family: 'Playfair Display', serif; color: #fff; font-size: 38px; margin: 0 0 14px; }
+    .hero p { color: #ccc; font-size: 15px; max-width: 560px; margin: 0 auto; }
+
+    .page-wrap { max-width: 1100px; margin: 0 auto; padding: 70px 60px; }
+
+    .impact-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 26px; margin-bottom: 70px;
+    }
+    .impact-card {
+      background: #fff; border-radius: 20px; padding: 34px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .impact-card.show { opacity: 1; transform: translateY(0); }
+    .impact-card.accent {
+      background: linear-gradient(135deg, #ff7b00, #ff9d3f); color: #fff;
+    }
+    .impact-card .icon { font-size: 34px; margin-bottom: 16px; }
+    .impact-card h3 { font-family: 'Playfair Display', serif; font-size: 21px; margin: 0 0 10px; }
+    .impact-card p { font-size: 14.5px; line-height: 1.8; margin: 0; opacity: 0.9; }
+    .impact-card.accent p { color: #fff; opacity: 0.95; }
+    .impact-card:not(.accent) p { color: #666; }
+
+    .stat-strip {
+      display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px;
+      background: #fff; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+    .stat-strip .item { text-align: center; }
+    .stat-strip .item .num { font-family: 'Playfair Display', serif; color: #ff7b00; font-size: 30px; font-weight: 700; }
+    .stat-strip .item .label { color: #777; font-size: 13px; margin-top: 6px; }
+
+    footer.simple-footer { text-align: center; color: #999; padding: 30px; font-size: 13px; background: #1c1c1c; }
+
+    @media (max-width: 700px) {
+      .impact-grid { grid-template-columns: 1fr; }
+      .page-wrap, .hero { padding-left: 24px; padding-right: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="/" class="logo">NK's Hub</a>
+    <nav>
+      <a href="/">Home</a>
+
+      <a href="/about/">About Us</a>
+     
+      <a href="{% url 'contact' %}">Contact</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="eyebrow">Our Promise</div>
+    <h1>Good Food, Better Planet</h1>
+    <p>NK's Hub sirf swaad nahi, zimmedari ke saath bhi banta hai — har order ke saath dhyan rakhte hain ki hum planet ko kam se kam nuksaan pahunchayein.</p>
+  </div>
+
+  <div class="page-wrap">
+    <div class="impact-grid" id="impactGrid">
+      <div class="impact-card accent">
+        <div class="icon">🌱</div>
+        <h3>500+ Trees Planted</h3>
+        <p>Har mahine hum local community ke saath milkar apne outlets ke aas-paas paudhe lagate hain — taaki jitna khana banate hain, utna hi hara-bhara environment bhi banayein.</p>
+      </div>
+      <div class="impact-card">
+        <div class="icon">🚫</div>
+        <h3>Zero Plastic Packaging</h3>
+        <p>Hum apna khana kabhi bhi plastic packaging me deliver nahi karte — sirf biodegradable aur recyclable materials use karte hain, taaki har order ke baad kachra kam se kam bache.</p>
+      </div>
+      <div class="impact-card">
+        <div class="icon">♻️</div>
+        <h3>Compostable Cutlery</h3>
+        <p>Saare spoons, containers, aur bags plant-based compostable material se bane hote hain — use karne ke baad ye mitti me hi mil jaate hain.</p>
+      </div>
+      <div class="impact-card accent">
+        <div class="icon">💧</div>
+        <h3>Water Conservation</h3>
+        <p>Kitchen me water-saving practices follow karte hain — cleaning aur cooking dono me — taaki wastage kam se kam ho.</p>
+      </div>
+    </div>
+
+    <div class="stat-strip">
+      <div class="item"><div class="num">500+</div><div class="label">Trees Planted</div></div>
+      <div class="item"><div class="num">0%</div><div class="label">Plastic Packaging</div></div>
+      <div class="item"><div class="num">100%</div><div class="label">Compostable Cutlery</div></div>
+    </div>
+  </div>
+
+  <footer class="simple-footer">© 2026 NK's Hub — Indore | Designed by Nachiket Dhakad</footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const cards = document.querySelectorAll('#impactGrid .impact-card');
+      cards.forEach(function (card, index) {
+        setTimeout(function () {
+          card.classList.add('show');
+        }, 200 + index * 200);
+      });
+    });
+  </script>
+
+</body>
+</html>
