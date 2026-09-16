@@ -401,6 +401,106 @@
       font-weight: 700;
       letter-spacing: 1.5px;
     }
+      
+      /* ================= MOBILE RESPONSIVE ================= */
+    @media (max-width: 768px) {
+      header.navbar {
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 14px;
+      }
+      header.navbar nav {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      header.navbar nav a {
+        margin: 0 8px;
+        font-size: 11px;
+      }
+      .monogram {
+        width: 42px;
+        height: 42px;
+        font-size: 17px;
+      }
+      .logo-text .name {
+        font-size: 18px;
+      }
+
+      .hero {
+        height: 60vh;
+        min-height: 380px;
+      }
+      .hero-content {
+        padding: 70px 16px 30px;
+      }
+      .welcome-text {
+        font-size: 32px;
+      }
+      .tagline {
+        font-size: 13px;
+        max-width: 100%;
+      }
+      .badge {
+        font-size: 9px;
+        padding: 6px 12px;
+        margin-bottom: 18px;
+      }
+      .divider {
+        margin: 18px auto;
+      }
+      .hero-buttons {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        margin-top: 24px;
+      }
+      .btn {
+        padding: 12px 20px;
+        font-size: 12px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .gallery-section {
+        padding: 50px 20px;
+      }
+      .gallery-heading {
+        font-size: 26px;
+      }
+      .gallery img {
+        height: 180px;
+      }
+      .gallery figcaption {
+        font-size: 17px;
+      }
+
+      .site-footer {
+        padding: 40px 20px 0;
+      }
+      .footer-top {
+        flex-direction: column;
+        gap: 26px;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        height: 55vh;
+        min-height: 340px;
+      }
+      .welcome-text {
+        font-size: 26px;
+      }
+      header.navbar nav a {
+        font-size: 10px;
+        margin: 0 6px;
+      }
+    }
+  
   </style>
 </head>
 <body>
