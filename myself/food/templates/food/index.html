@@ -434,16 +434,27 @@
         font-size: 7px;
       }
        
-      .hero {
-         position: relative;
-  height: 640px;
-  min-height: 640px;
-  overflow: hidden;
-  align-items: center;
-  padding: 0;
+    .bg-video {
+  display: none;
 }
-      .hero-content {
-         padding: 40px 16px 30px;
+.video-overlay {
+  display: none;
+}
+.hero {
+  position: relative;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+  align-items: flex-start;
+  padding: 0 0 30px;
+  background-image: linear-gradient(180deg, rgba(255,123,0,0.5) 0%, rgba(255,69,0,0.25) 45%, rgba(12,10,8,0.85) 100%), url('/static/food/images/burger.jpg');
+  background-size: cover;
+  background-position: center;
+}
+.hero-content {
+  padding: 30px 16px 10px;
+  position: relative;
+  z-index: 2;
 }
          
 
