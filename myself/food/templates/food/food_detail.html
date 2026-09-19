@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ item.name }} - NK's Hub</title>
   <link rel="stylesheet" href="{% static 'food/style.css' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,7 +34,50 @@
     .back-link:hover { text-decoration: underline; }
 
     .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-    @media (max-width: 800px) { .detail-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 800px) {
+      .detail-grid { grid-template-columns: 1fr; gap: 20px; }
+
+      header.navbar { padding: 12px 18px; flex-wrap: wrap; gap: 10px; }
+      header.navbar .logo { font-size: 19px; }
+      header.navbar nav { display: flex; gap: 4px; }
+      header.navbar nav a { margin: 0 6px; font-size: 12px; }
+      .cart-indicator { padding: 7px 14px; font-size: 12px; }
+
+      .page-wrap { padding: 18px 14px 60px; }
+      .back-link { font-size: 13px; margin-bottom: 14px; }
+
+      .gallery-main { height: 240px; border-radius: 14px; }
+      .gallery-thumbs img { width: 52px; height: 52px; }
+      .fav-heart-btn { width: 38px; height: 38px; font-size: 17px; top: 10px; right: 10px; }
+
+      .info-col h1 { font-size: 22px; }
+      .info-col .tagline { font-size: 12.5px; }
+      .info-col .description { font-size: 13px; line-height: 1.6; }
+      .price-block .now { font-size: 22px; }
+      .price-block .old { font-size: 14px; }
+      .views-line { font-size: 11.5px; margin-bottom: 16px; }
+
+      .action-row { flex-direction: column; gap: 10px; }
+      .btn-add-cart, .btn-buy-now { width: 100%; padding: 13px 20px; font-size: 13.5px; }
+
+      .section-title { font-size: 18px; margin: 34px 0 14px; }
+      .review-card { padding: 14px 16px; }
+      .review-form { padding: 16px; }
+
+      .related-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+      .related-card img { height: 100px; }
+      .related-card .rc-body { padding: 10px 10px 12px; }
+      .related-card h4 { font-size: 12.5px; }
+      .related-card .rc-price { font-size: 12.5px; }
+
+      .site-footer { padding: 30px 18px 0; }
+      .footer-top { flex-direction: column; gap: 20px; }
+      .footer-bottom { flex-direction: column; text-align: center; gap: 6px; }
+      .footer-bottom p, .footer-credit { font-size: 10.5px; }
+
+      .nk-bot { width: 52px; height: 52px; bottom: 18px; right: 18px; }
+      .nk-chat { width: 88vw; right: 5vw; bottom: 84px; }
+    }
 
     .gallery-main {
       position: relative;
