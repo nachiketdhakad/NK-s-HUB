@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - NK's Hub</title>
   <link rel="stylesheet" href="{% static 'food/style.css' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -174,12 +174,31 @@
     .signup-note a { color: #d9a94e; text-decoration: none; font-weight: 600; }
     .signup-note a:hover { text-decoration: underline; }
 
-    @media (max-width: 900px) {
+        @media (max-width: 900px) {
       .login-wrap { flex-direction: column; margin: 0; border-radius: 0; }
-      .login-image { min-height: 260px; }
-      .login-form-side { padding: 50px 30px; }
-      header.navbar { padding: 16px 24px; }
+      .login-image { min-height: 200px; }
+      .image-caption { font-size: 17px; bottom: 20px; left: 20px; max-width: 260px; }
+      .login-form-side { padding: 40px 24px; }
+      header.navbar { padding: 14px 18px; }
       header.navbar nav { display: none; }
+      .logo-badge { width: 36px; height: 36px; font-size: 13px; }
+      .logo-text { font-size: 18px; }
+      .login-form-side h1 { font-size: 28px; }
+      .login-sub { font-size: 12.5px; margin-bottom: 30px; }
+      .welcome-eyebrow { font-size: 10px; letter-spacing: 3px; }
+      .field { margin-bottom: 24px; }
+      .field input { font-size: 14px; padding: 10px 26px 10px 24px; }
+      .row-between { font-size: 11px; margin: -6px 0 26px; }
+      .login-btn { padding: 14px; font-size: 13px; }
+      .divider { margin: 26px 0 20px; }
+      .social-login { flex-direction: column; gap: 10px; }
+      .signup-note { font-size: 12.5px; }
+    }
+
+    @media (max-width: 480px) {
+      .login-image { min-height: 160px; }
+      .login-form-side { padding: 30px 18px; }
+      .login-form-side h1 { font-size: 24px; }
     }
   </style>
 </head>
