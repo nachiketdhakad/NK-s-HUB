@@ -2,15 +2,202 @@
 {% block content %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<div class="payment-box">
-  <h2>Complete Payment</h2>
-  <p>Amount: <strong>₹{{ total_amount }}</strong></p>
+<style>
+  .nk-pay-wrap {
+    max-width: 480px;
+    margin: 40px auto 60px;
+    padding: 0 20px;
+    font-family: 'Poppins', -apple-system, sans-serif;
+  }
 
-  <div id="qrSection">
-    <h3>Scan QR and Pay</h3>
-    <div id="qrcode"></div>
-    <p class="text-muted">Do not close this screen until payment completes</p>
-    <p id="statusText">Waiting for payment...</p>
+  .nk-pay-card {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.04);
+    overflow: hidden;
+  }
+
+  .nk-pay-header {
+    background: linear-gradient(135deg, #ff7b00, #ff4500);
+    padding: 30px 28px 26px;
+    text-align: center;
+    color: #fff;
+    position: relative;
+  }
+  .nk-pay-header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  }
+  .nk-pay-eyebrow {
+    font-size: 11.5px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .nk-pay-amount {
+    font-size: 40px;
+    font-weight: 800;
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+  }
+  .nk-pay-amount span { font-size: 22px; vertical-align: top; margin-right: 2px; opacity: 0.85; }
+
+  .nk-pay-body {
+    padding: 10px 28px 32px;
+    text-align: center;
+  }
+
+  .nk-pay-instruction {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 6px 0 20px;
+  }
+
+  .nk-qr-frame {
+    display: inline-block;
+    padding: 16px;
+    background: #fff;
+    border-radius: 20px;
+    border: 2px dashed #ffcfa3;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(255,123,0,0.12);
+  }
+  #qrcode { line-height: 0; }
+  #qrcode img { display: block; border-radius: 8px; }
+
+  .nk-pay-corner {
+    position: absolute;
+    width: 22px; height: 22px;
+    border-color: #ff7b00;
+    border-style: solid;
+    border-width: 0;
+  }
+  .nk-pay-corner.tl { top: -3px; left: -3px; border-top-width: 4px; border-left-width: 4px; border-radius: 8px 0 0 0; }
+  .nk-pay-corner.tr { top: -3px; right: -3px; border-top-width: 4px; border-right-width: 4px; border-radius: 0 8px 0 0; }
+  .nk-pay-corner.bl { bottom: -3px; left: -3px; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 8px; }
+  .nk-pay-corner.br { bottom: -3px; right: -3px; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 8px 0; }
+
+  .nk-pay-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 18px;
+    font-size: 12.5px;
+    color: #a34700;
+    background: #fff3e8;
+    padding: 10px 14px;
+    border-radius: 10px;
+  }
+
+  .nk-pay-apps {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 20px;
+  }
+  .nk-pay-apps span {
+    font-size: 11px;
+    font-weight: 600;
+    color: #999;
+    background: #f5f5f5;
+    padding: 6px 14px;
+    border-radius: 20px;
+  }
+
+  .nk-pay-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 26px;
+    padding: 14px;
+    border-radius: 14px;
+    background: #fff8f2;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .nk-pay-status-row.success {
+    background: #e9f9ef;
+  }
+  .nk-spinner {
+    width: 18px; height: 18px;
+    border: 2.5px solid #ffd8ac;
+    border-top-color: #ff7b00;
+    border-radius: 50%;
+    animation: nkSpin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes nkSpin { to { transform: rotate(360deg); } }
+  #statusText {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #a34700;
+    margin: 0;
+  }
+  .nk-pay-status-row.success #statusText { color: #00994d; }
+
+  .nk-pay-secure {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 18px;
+    font-size: 11.5px;
+    color: #999;
+  }
+
+  @media (max-width: 480px) {
+    .nk-pay-wrap { margin: 20px auto 40px; padding: 0 14px; }
+    .nk-pay-header { padding: 24px 20px 20px; }
+    .nk-pay-amount { font-size: 32px; }
+    .nk-pay-body { padding: 8px 18px 24px; }
+    .nk-qr-frame { padding: 12px; }
+    #qrcode img { width: 180px !important; height: 180px !important; }
+  }
+</style>
+
+<div class="nk-pay-wrap">
+  <div class="nk-pay-card">
+    <div class="nk-pay-header">
+      <div class="nk-pay-eyebrow">Complete Your Payment</div>
+      <div class="nk-pay-amount"><span>₹</span>{{ total_amount }}</div>
+    </div>
+
+    <div class="nk-pay-body">
+      <p class="nk-pay-instruction">📱 Scan the QR code with any UPI app</p>
+
+      <div class="nk-qr-frame">
+        <div class="nk-pay-corner tl"></div>
+        <div class="nk-pay-corner tr"></div>
+        <div class="nk-pay-corner bl"></div>
+        <div class="nk-pay-corner br"></div>
+        <div id="qrcode"></div>
+      </div>
+
+      <div class="nk-pay-apps">
+        <span>GPay</span>
+        <span>PhonePe</span>
+        <span>Paytm</span>
+      </div>
+
+      <div class="nk-pay-note">
+        ⚠️ Do not close this screen until payment completes
+      </div>
+
+      <div class="nk-pay-status-row" id="statusRow">
+        <div class="nk-spinner" id="statusSpinner"></div>
+        <p id="statusText">Waiting for payment...</p>
+      </div>
+
+      <div class="nk-pay-secure">🔒 Secured &amp; encrypted transaction</div>
+    </div>
   </div>
 </div>
 
@@ -23,7 +210,9 @@ new QRCode(document.getElementById("qrcode"), {
 
 // Ye sirf simulation hai — real payment gateway nahi hai
 setTimeout(()=>{
-  document.getElementById('statusText').innerText = "✅ Payment Successful!";
+  document.getElementById('statusRow').classList.add('success');
+  document.getElementById('statusSpinner').outerHTML = '<span style="font-size:18px;">✅</span>';
+  document.getElementById('statusText').innerText = "Payment Successful!";
   setTimeout(()=>{ window.location.href = "{% url 'confirm_payment' %}"; }, 1500);
 }, 5000); // 5 sec baad auto "scan ho gaya" simulate karega
 </script>
