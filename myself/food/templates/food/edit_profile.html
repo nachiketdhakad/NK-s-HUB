@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Profile - NK's Hub</title>
   <style>
     * { box-sizing: border-box; }
@@ -93,7 +94,19 @@
     .save-btn:hover { opacity: 0.95; }
 
     .cancel-link { margin-left: 16px; color: #666; text-decoration: none; font-size: 14px; }
-  </style>
+ 
+     @media (max-width: 768px) {
+      header.navbar { padding: 12px 18px; }
+      .banner { margin: 16px 14px 0; padding: 18px 20px; border-radius: 14px; }
+      .banner h1 { font-size: 18px; }
+      .account-wrap { margin: 16px 14px 40px; flex-direction: column; }
+      .sidebar { width: 100%; display: flex; overflow-x: auto; padding: 10px; border-right: none; border-bottom: 1px solid #ffe4c9; }
+      .sidebar a { flex-shrink: 0; white-space: nowrap; padding: 10px 16px; font-size: 13px; border-right: none !important; }
+      .sidebar a.active { border-right: none; border-bottom: 3px solid #ff7b00; }
+      .content { padding: 20px 16px; max-width: 100%; }
+      .content h2 { font-size: 19px; }
+    }
+ </style>
 </head>
 <body>
 

@@ -26,6 +26,17 @@
     .remove-fav-btn:hover { background: #fff; transform: scale(1.1); }
     .empty-fav { text-align: center; color: #666; padding: 80px 0; }
     .empty-fav a { display: inline-block; margin-top: 14px; background: linear-gradient(90deg, #00c853, #00994d); color: #fff; padding: 12px 28px; border-radius: 30px; text-decoration: none; font-weight: 700; }
+  
+      @media (max-width: 768px) {
+      header.navbar { padding: 12px 18px; }
+      .wrap { padding: 0 14px; margin: 20px auto 40px; }
+      .wrap h2 { font-size: 19px; margin-bottom: 18px; }
+      .fav-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .fav-card img { height: 100px; }
+      .fav-body { padding: 10px; }
+      .fav-body strong { font-size: 13px; }
+      .remove-fav-btn { width: 28px; height: 28px; font-size: 13px; }
+    }
   </style>
 </head>
 <body>
