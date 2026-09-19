@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About Us - NK's Hub</title>
   <link rel="stylesheet" href="{% static 'food/style.css' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -217,7 +218,36 @@
       .about-me { flex-direction: column; text-align: center; }
       .social-row { justify-content: center; }
     }
-  </style>
+ 
+     @media (max-width: 768px) {
+      header.navbar { padding: 12px 18px; }
+      header.navbar .logo { font-size: 19px; }
+      header.navbar nav a { margin: 0 8px; font-size: 12px; }
+
+      .stats-strip { padding: 26px 20px 32px; }
+      .stats-heading { font-size: 22px; margin-bottom: 26px; }
+      .stats-grid { gap: 30px; }
+      .stat-item .num { font-size: 24px; }
+      .stat-item .label { font-size: 11.5px; }
+
+      .page-wrap { padding: 40px 20px; }
+      .section-heading { font-size: 22px; }
+      .about-block p { font-size: 14px; }
+
+      .about-me { gap: 24px; margin-bottom: 50px; }
+      .about-me-photo { flex: 0 0 160px; width: 160px; height: 160px; }
+      .about-me-text h3 { font-size: 20px; }
+      .about-me-text p { font-size: 13.5px; }
+
+      .outlets-block > p.sub { font-size: 13px; padding: 0 10px; }
+      .map-visual { padding: 30px 16px; min-height: 320px; }
+      .pin-circle { width: 56px; height: 56px; font-size: 19px; }
+      .pin-label { font-size: 12px; }
+      .pin-address { font-size: 10px; max-width: 100px; }
+      .map-center-badge { width: 54px; height: 54px; font-size: 13px; }
+    }
+ 
+ </style>
 </head>
 <body>
 
