@@ -4,6 +4,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Menu - NK's Hub</title>
   <link rel="stylesheet" href="{% static 'food/style.css' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -322,6 +323,69 @@
     .nk-foot{display:flex;gap:6px;padding:10px;background:#1c1c1c;border-top:1px solid #333;}
     .nk-foot input{flex:1;background:#2a2a2a;border:1px solid #444;border-radius:18px;padding:8px 12px;color:#eee;font-size:13px;outline:none;}
     .nk-foot button{width:34px;height:34px;border-radius:50%;border:none;background:linear-gradient(135deg,#ff7b00,#ffb347);cursor:pointer;}
+  
+  
+      @media (max-width: 768px) {
+      header.navbar {
+        padding: 12px 16px;
+        gap: 8px;
+      }
+      header.navbar .logo { font-size: 18px; }
+      header.navbar nav { display: flex; flex-wrap: wrap; gap: 2px; }
+      header.navbar nav a { margin: 0 6px; font-size: 11px; }
+      .cart-indicator { padding: 7px 14px; font-size: 12px; }
+
+      .search-strip { padding: 16px 14px 0; }
+      .search-box { padding: 10px 14px; min-width: 0; }
+      .search-box input { font-size: 13px; }
+      .sortby-btn { padding: 9px 14px; font-size: 12px; }
+      .quick-filter-pill { padding: 6px 13px; font-size: 11.5px; }
+
+      .category-strip-wrap { padding: 18px 14px 6px; }
+      .category-strip-title { font-size: 17px; margin-bottom: 12px; }
+      .category-strip { gap: 18px; }
+      .cat-circle .circle-img { width: 58px; height: 58px; }
+      .cat-circle span.label { font-size: 11px; }
+      .pref-pill { padding: 6px 14px; font-size: 11.5px; }
+
+      .main-content { padding: 6px 12px 70px; }
+      .banner { padding: 20px 20px; border-radius: 16px; margin: 14px 0 18px; }
+      .banner h1 { font-size: 19px; }
+      .banner p { font-size: 12.5px; }
+
+      .section-title { font-size: 17px; margin: 20px 0 12px; }
+
+      /* 2-column Swiggy-style compact grid */
+      .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .food-card { border-radius: 14px; }
+      .food-card img.dish-img { height: 100px; }
+      .discount-badge { font-size: 9px; padding: 3px 8px; top: 8px; left: 8px; }
+      .rating-badge { font-size: 10px; padding: 3px 7px; top: 8px; right: 8px; }
+      .pref-dot { width: 14px; height: 14px; bottom: 8px; left: 8px; }
+      .pref-dot .inner-dot { width: 5px; height: 5px; }
+
+      .food-card .card-body { padding: 10px 10px 12px; }
+      .food-card h3 { font-size: 13px; margin: 0 0 2px; }
+      .food-card .tagline { font-size: 10.5px; margin: 0 0 6px; }
+      .views-badge { font-size: 9.5px; padding: 2px 7px; margin-top: 4px; }
+      .food-card .bottom-row { flex-direction: column; align-items: flex-start; gap: 6px; margin-top: 6px; }
+      .old-price { font-size: 10px; }
+      .food-card .price { font-size: 13.5px; }
+      .btn-cart { padding: 6px 12px; font-size: 10.5px; width: 100%; text-align: center; }
+
+      .site-footer { padding: 30px 16px 0; }
+      .footer-top { flex-direction: column; gap: 20px; }
+      .footer-bottom { flex-direction: column; text-align: center; gap: 6px; }
+      .footer-bottom p, .footer-credit { font-size: 10px; }
+
+      .added-bar { padding: 12px 18px; font-size: 12.5px; }
+      .nk-bot { width: 48px; height: 48px; bottom: 18px; right: 18px; }
+      .nk-chat { width: 88vw; right: 6vw; bottom: 82px; }
+    }
+  
   </style>
 </head>
 <body>
