@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Search - NK's Hub</title>
   <link rel="stylesheet" href="{% static 'food/style.css' %}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -139,6 +140,31 @@
       padding: 14px 20px; border-radius: 12px; font-size: 13.5px; box-shadow: 0 10px 24px rgba(0,0,0,0.3);
       z-index: 200; display: none; max-width: 320px;
     }
+      @media (max-width: 768px) {
+      .search-header { padding: 12px 14px; gap: 10px; }
+      .search-input-wrap { padding: 10px 14px; }
+      .search-input-wrap input { font-size: 13.5px; }
+      .sortby-btn { padding: 10px 14px; font-size: 12px; }
+
+      .search-body { padding: 18px 14px 80px; }
+      .results-count { font-size: 13px; }
+
+      .card-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .food-card { border-radius: 14px; }
+      .food-card img.dish-img { height: 100px; }
+      .discount-badge { font-size: 9px; padding: 3px 8px; top: 8px; left: 8px; }
+      .rating-badge { font-size: 10px; padding: 3px 7px; top: 8px; right: 8px; }
+      .pref-dot { width: 14px; height: 14px; bottom: 8px; left: 8px; }
+      .food-card .card-body { padding: 10px 10px 12px; }
+      .food-card h3 { font-size: 13px; }
+      .food-card .tagline { font-size: 10.5px; }
+      .food-card .bottom-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .food-card .price { font-size: 13.5px; }
+      .btn-cart { width: 100%; padding: 6px 12px; font-size: 10.5px; }
+
+      .added-bar { padding: 12px 18px; font-size: 12.5px; }
+    }
+  
   </style>
 </head>
 <body>

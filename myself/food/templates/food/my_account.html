@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Account - NK's Hub</title>
   <style>
     * { box-sizing: border-box; }
@@ -64,6 +65,30 @@
     .btn-stay:hover { background: #e8e8e8; }
     .btn-confirm-logout { background: #ff4500; color: #fff; }
     .btn-confirm-logout:hover { background: #e03e00; }
+      @media (max-width: 768px) {
+      header.navbar { padding: 12px 18px; }
+      header.navbar .logo { font-size: 20px; }
+      header.navbar nav a { margin: 0 8px; font-size: 12.5px; }
+
+      .banner { margin: 16px 14px 0; padding: 18px 20px; border-radius: 14px; }
+      .banner-user .name { font-size: 17px; }
+      .banner-user .phone { font-size: 12px; }
+      .edit-profile-btn { padding: 8px 16px; font-size: 11.5px; }
+
+      .account-wrap { margin: 16px 14px 40px; flex-direction: column; border-radius: 14px; }
+      .sidebar { width: 100%; display: flex; overflow-x: auto; padding: 10px; border-right: none; border-bottom: 1px solid #ffe4c9; }
+      .sidebar a { flex-shrink: 0; white-space: nowrap; padding: 10px 16px; font-size: 13px; border-right: none !important; }
+      .sidebar a.active { border-right: none; border-bottom: 3px solid #ff7b00; }
+
+      .content { padding: 20px 16px; }
+      .content h2 { font-size: 19px; margin-bottom: 16px; }
+
+      .order-card { flex-direction: column; align-items: flex-start; padding: 14px; gap: 8px; }
+      .order-info strong { font-size: 14px; }
+      .order-items-line { font-size: 12.5px; }
+      .total-paid { font-size: 14px; }
+    }
+  
   </style>
 </head>
 <body>
